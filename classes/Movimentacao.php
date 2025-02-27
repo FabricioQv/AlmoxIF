@@ -1,10 +1,23 @@
 <?php
 class Movimento {
-    private $fk_Item_id_item;
-    private $fk_Usuario_id_usuario;
-    private $dataSaida;
-    private $dataEntrada;
-    private $quantidadeMovimentada;
+
+    private $id;
+    private $itemId;
+    private $tipo;
+    private $quantidade;
+    private $validade;
+
+    public function __construct($id, $itemId, $tipo, $quantidade, $validade) {
+        $this->id = $id;
+        $this->itemId = $itemId;
+        $this->tipo = $tipo;
+        $this->quantidade = $quantidade;
+        $this->validade = $validade;
+    }
+
+    public function getValidade() {
+        return $this->validade ? date("d/m/Y", strtotime($this->validade)) : "Não Perecível";
+    }
 
     public function getItemId() {
         return $this->fk_Item_id_item;

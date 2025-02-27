@@ -13,23 +13,33 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $quantidade = intval($_POST["quantidade"]);
     $validade = !empty($_POST["validade"]) ? $_POST["validade"] : null;
     $categoria = intval($_POST["categoria"]);
-    
+    $estoqueCritico = isset($_POST["estoqueCritico"]) && $_POST["estoqueCritico"] !== "" ? intval($_POST["estoqueCritico"]) : null;
+
+    // Processamento da imagem
     $imagemNome = null;
-    
     if (!empty($_FILES["imagem"]["name"])) {
-        $extensao = pathinfo($_FILES["imagem"]["name"], PATHINFO_EXTENSION);
-        $imagemNome = uniqid("item_") . "." . $extensao;
-        move_uploaded_file($_FILES["imagem"]["tmp_name"], "../uploads/" . $imagemNome);
+        $extensao = strtolower(pathinfo($_FILES["imagem"]["name"], PATHINFO_EXTENSION));
+        $extensoesPermitidas = ["jpg", "jpeg", "png", "gif"];
+        
+        if (in_array($extensao, $extensoesPermitidas)) {
+            $imagemNome = uniqid("item_") . "." . $extensao;
+            move_uploaded_file($_FILES["imagem"]["tmp_name"], "../uploads/" . $imagemNome);
+        } else {
+            header("Location: ../views/cadastro_item.php?erro=imagem");
+            exit();
+        }
     }
 
     $itemDAO = new ItemDAO();
 
+    // Verificar se o código do item já existe
     if ($itemDAO->verificarCodigoExistente($codigo)) {
         header("Location: ../views/cadastro_item.php?erro=codigo");
         exit();
     }
 
-    $sucesso = $itemDAO->cadastrarItem($nome, $codigo, $quantidade, $validade, $categoria, $imagemNome);
+    // Cadastrar o item no banco de dados
+    $sucesso = $itemDAO->cadastrarItem($nome, $codigo, $quantidade, $validade, $categoria, $imagemNome, $estoqueCritico);
 
     if ($sucesso) {
         header("Location: ../views/cadastro_item.php?sucesso=1");
@@ -39,4 +49,3 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit();
     }
 }
-?>

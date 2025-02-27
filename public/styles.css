@@ -3,13 +3,15 @@
     --secondary-color: #32CD32; /* Verde mais claro para contrastes */
     --light-color: #ffffff; /* Branco */
     --dark-color: #333333; /* Cinza escuro para textos */
+    --hover-color: #2E8B57; /* Verde médio para efeitos de hover */
+    --border-color: #ddd; /* Cor de borda sutil */
 }
 
 body {
     background-color: var(--light-color);
     font-family: 'Inter', sans-serif;
     color: var(--dark-color);
-    display: flex; /* Mantém layout flexível */
+    display: flex;
 }
 
 /* Sidebar fixa na esquerda */
@@ -44,7 +46,7 @@ body {
     color: var(--light-color);
 }
 
-/* Navbar ajustada para não sobrepor a sidebar */
+/* Navbar */
 .navbar {
     position: fixed;
     top: 0;
@@ -53,33 +55,10 @@ body {
     z-index: 1000;
     background: white;
     padding: 15px 20px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 2px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
-}
-
-/* Ajusta o dropdown do usuário */
-.navbar .dropdown-toggle {
-    color: var(--dark-color);
-    font-weight: bold;
-    text-decoration: none;
-}
-
-.navbar .dropdown-menu {
-    min-width: 200px;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-.navbar .dropdown-menu a {
-    color: var(--dark-color);
-    padding: 10px;
-}
-
-.navbar .dropdown-menu a:hover {
-    background: var(--secondary-color);
-    color: white;
 }
 
 /* Ajusta o conteúdo principal */
@@ -116,118 +95,108 @@ body {
     transform: scale(1.05);
 }
 
-/* Botão de novo produto */
-.btn-success {
-    background: var(--primary-color);
-    border-radius: 8px;
-    padding: 10px 20px;
-}
-
-.btn-success:hover {
-    background: var(--secondary-color);
-}
-
-/* Ajusta a barra de pesquisa */
-.search-form {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    max-width: 500px;
-}
-
-.search-form input {
-    flex: 1;
-    border-radius: 8px;
-}
-
-.search-form button {
-    border-radius: 8px;
-}
-
-/* Ajuste na tabela */
+/* Estilização da Tabela */
 .table-custom {
     width: 100%;
-    max-width: 1100px;
+    max-width: 1200px;
     border-radius: 10px;
     overflow: hidden;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    background: white;
+    border: 1px solid var(--border-color);
+    padding: 15px;
 }
 
-.table-custom thead {
-    background: var(--primary-color);
-    color: white;
+/* Cabeçalho da tabela */
+.dataTable thead {
+    background: var(--primary-color) !important;
+    color: white !important;
     text-align: center;
+    font-weight: bold;
+    font-size: 18px;
+    text-transform: uppercase;
 }
 
-.table-custom th, .table-custom td {
+/* Estilização das células */
+.dataTable th, 
+.dataTable td {
     text-align: center;
-    padding: 12px;
+    padding: 15px;
+    vertical-align: middle;
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border-color);
+    font-size: 16px;
 }
 
-/* Avatar do perfil */
-.profile-avatar {
-    font-size: 100px;
-    color: var(--secondary-color);
+/* Ajuste para Linhas Alternadas */
+.dataTable tbody tr:nth-child(even) {
+    background-color: rgba(50, 205, 50, 0.1);
 }
 
-/* Cartão de perfil e formulários */
-.profile-card {
-    width: 100%;
-    max-width: 600px;
+/* Efeito Hover nas Linhas */
+.dataTable tbody tr:hover {
+    background-color: rgba(50, 205, 50, 0.2);
+    transition: 0.3s;
+}
+
+/* Estilização do Campo de Pesquisa */
+.dataTables_wrapper .dataTables_filter input {
+    border-radius: 8px;
+    border: 1px solid var(--primary-color);
+    padding: 10px;
     background: var(--light-color);
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-    padding: 20px;
-    text-align: center;
+    font-size: 14px;
 }
 
-/* Botões personalizados */
-.btn-primary-custom {
+/* Botões de Paginação */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+    border-radius: 25px;
+    border: 1px solid var(--primary-color);
     background: var(--primary-color);
-    border: none;
-    padding: 10px 20px;
-    border-radius: 8px;
+    color: white;
+    margin: 5px;
+    transition: 0.3s;
+    padding: 8px 15px;
+    font-weight: bold;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: var(--hover-color);
     color: white;
 }
 
-.btn-primary-custom:hover {
-    background: var(--secondary-color);
-}
-
-/* Estilização dos botões */
-.btn-group-custom {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    margin-top: 20px;
-}
-
-/* Estiliza os toasts (notificações) */
-.toast-container {
-    position: fixed;
-    top: 10px;
-    right: 10px;
-    z-index: 1050;
-}
-
-.toast {
+/* Ajuste do botão 'Mostrar' */
+.dataTables_length select {
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-/* Ajusta a imagem do item na tabela */
-.item-img {
-    width: 50px;
-    height: 50px;
-    object-fit: cover;
-    border-radius: 50%;
-    border: 2px solid #ddd;
+    border: 1px solid var(--primary-color);
+    padding: 8px;
+    background: var(--light-color);
+    color: var(--dark-color);
 }
 
 /* Melhor alinhamento para os elementos no estoque */
 .w-100 {
     width: 100%;
-    max-width: 1100px;
+    max-width: 1200px;
+}
+
+/* Ajusta a imagem do item na tabela */
+.item-img {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    display: block;
+    margin: auto;
+    background: white;
+}
+
+/* Melhorando Células Vazias */
+.dataTable tbody td:empty::after {
+    content: "—";
+    color: #999;
+    font-style: italic;
 }
 
 /* Responsividade */

@@ -1,5 +1,6 @@
 <?php
-class Item {
+class Item
+{
     private $id_item;
     private $quantidadeEstoque;
     private $dataValidade;
@@ -7,47 +8,74 @@ class Item {
     private $nome;
     private $fk_Categoria_id_categoria;
 
-    public function getIdItem() {
+
+    public function __construct($id, $nome, $codigo, $categoria, $estoqueCritico, $dataValidade)
+    {
+        $this->id = $id;
+        $this->nome = $nome;
+        $this->codigo = $codigo;
+        $this->categoria = $categoria;
+        $this->estoqueCritico = $estoqueCritico;
+        $this->dataValidade = $dataValidade;
+    }
+
+    public function getdataValidade()
+    {
+        return $this->dataValidade ? date("d/m/Y", strtotime($this->dataValidade)) : "Não Perecível";
+    }
+
+    public function getIdItem()
+    {
         return $this->id_item;
     }
 
-    public function getQuantidadeEstoque() {
+    public function getQuantidadeEstoque()
+    {
         return $this->quantidadeEstoque;
     }
 
-    public function getDataValidade() {
-        return $this->dataValidade;
+    public function getDatadataValidade()
+    {
+        return $this->datadataValidade;
     }
 
-    public function getCodigo() {
+    public function getCodigo()
+    {
         return $this->codigo;
     }
 
-    public function getNome() {
+    public function getNome()
+    {
         return $this->nome;
     }
 
-    public function getCategoriaId() {
+    public function getCategoriaId()
+    {
         return $this->fk_Categoria_id_categoria;
     }
 
-    public function setQuantidadeEstoque($quantidade) {
+    public function setQuantidadeEstoque($quantidade)
+    {
         $this->quantidadeEstoque = $quantidade;
     }
 
-    public function setDataValidade($data) {
-        $this->dataValidade = $data;
+    public function setDatadataValidade($data)
+    {
+        $this->datadataValidade = $data;
     }
 
-    public function setCodigo($codigo) {
+    public function setCodigo($codigo)
+    {
         $this->codigo = $codigo;
     }
 
-    public function setNome($nome) {
+    public function setNome($nome)
+    {
         $this->nome = $nome;
     }
 
-    public function setCategoriaId($categoriaId) {
+    public function setCategoriaId($categoriaId)
+    {
         $this->fk_Categoria_id_categoria = $categoriaId;
     }
 }

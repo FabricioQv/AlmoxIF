@@ -13,7 +13,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     if (!empty($nome) && !empty($login) && !empty($senha) && !empty($role)) {
         $usuarioDAO = new UsuarioDAO();
 
-        if ($usuarioDAO->existeLogin($login)) {
+        if ($usuarioDAO->existeUsuario($login)) {
             header("Location: ../views/cadastro_usuario.php?duplicado=1");
             exit();
         }

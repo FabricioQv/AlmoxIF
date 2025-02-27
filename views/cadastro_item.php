@@ -56,40 +56,47 @@ $categorias = $categoriaDAO->listarTodos();
         <div class="profile-card">
             <h2><i class="bi bi-box"></i> Novo Item</h2>
 
-            <form action="../dao/processa_cadastro_item.php" method="POST" enctype="multipart/form-data">
-                <div class="mb-3">
-                    <label for="nome" class="form-label">Nome do Item</label>
-                    <input type="text" class="form-control" id="nome" name="nome" required>
-                </div>
-                <div class="mb-3">
-                    <label for="codigo" class="form-label">Código</label>
-                    <input type="text" class="form-control" id="codigo" name="codigo" required>
-                </div>
-                <div class="mb-3">
-                    <label for="quantidade" class="form-label">Quantidade em Estoque</label>
-                    <input type="number" class="form-control" id="quantidade" name="quantidade" required min="1">
-                </div>
-                <div class="mb-3">
-                    <label for="validade" class="form-label">Data de Validade</label>
-                    <input type="date" class="form-control" id="validade" name="validade">
-                </div>
-                <div class="mb-3">
-                    <label for="categoria" class="form-label">Categoria</label>
-                    <select class="form-control" id="categoria" name="categoria" required>
-                        <option value="">Selecione uma categoria</option>
-                        <?php foreach ($categorias as $categoria): ?>
-                            <option value="<?= htmlspecialchars($categoria['id_categoria']) ?>">
-                                <?= htmlspecialchars($categoria['nome']) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <div class="mb-3">
-                    <label for="imagem" class="form-label">Imagem do Item</label>
-                    <input type="file" class="form-control" id="imagem" name="imagem" accept="image/*">
-                </div>
-                <button type="submit" class="btn btn-primary-custom"><i class="bi bi-save"></i> Cadastrar Item</button>
+            <form action="../dao/processa_cadastro_item.php" method="POST">
+                    <div class="mb-3">
+                        <label for="nome" class="form-label">Nome do Item</label>
+                        <input type="text" class="form-control" id="nome" name="nome" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="codigo" class="form-label">Código</label>
+                        <input type="text" class="form-control" id="codigo" name="codigo" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="categoria" class="form-label">Categoria</label>
+                        <select class="form-control" id="categoria" name="categoria" required>
+                            <option value="">Selecione uma categoria</option>
+                            <?php foreach ($categorias as $categoria): ?>
+                                <option value="<?= htmlspecialchars($categoria['id_categoria']) ?>">
+                                    <?= htmlspecialchars($categoria['nome']) ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="estoqueCritico" class="form-label">Estoque Crítico (Opcional)</label>
+                        <input type="number" class="form-control" id="estoqueCritico" name="estoqueCritico" min="0" placeholder="Informe o estoque crítico">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="quantidade" class="form-label">Quantidade Inicial</label>
+                        <input type="number" class="form-control" id="quantidade" name="quantidade" required min="1">
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="validade" class="form-label">Data de Validade (Opcional)</label>
+                        <input type="date" class="form-control" id="validade" name="validade">
+                    </div>
+
+                    <button type="submit" class="btn btn-primary-custom"><i class="bi bi-save"></i> Cadastrar Item</button>
             </form>
+
 
             <div class="btn-group-custom">
                 <a href="estoque.php" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Cancelar</a>

@@ -29,7 +29,7 @@ $usuario = $_SESSION["usuario"];
                 <a class="nav-link active" href="dashboard.php"><i class="bi bi-house-door"></i> Dashboard</a>
             </li>
             <li class="nav-item mb-2">
-                <a class="nav-link" href="produtos.php"><i class="bi bi-boxes"></i> Produtos</a>
+                <a class="nav-link" href="estoque.php"><i class="bi bi-boxes"></i> Produtos</a>
             </li>
             <li class="nav-item mb-2">
                 <a class="nav-link" href="relatorios.php"><i class="bi bi-clipboard-data"></i> Relatórios</a>

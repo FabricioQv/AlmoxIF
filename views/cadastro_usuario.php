@@ -29,10 +29,10 @@ $duplicado = isset($_GET['duplicado']);
         <h3 class="mb-4"><i class="bi bi-box-seam"></i> Estoque IFSul</h3>
         <ul class="nav flex-column">
             <li class="nav-item mb-2">
-                <a class="nav-link" href="../index.php"><i class="bi bi-house-door"></i> Dashboard</a>
+                <a class="nav-link" href="dashboard.php"><i class="bi bi-house-door"></i> Dashboard</a>
             </li>
             <li class="nav-item mb-2">
-                <a class="nav-link" href="#"><i class="bi bi-boxes"></i> Produtos</a>
+                <a class="nav-link" href="estoque.php"><i class="bi bi-boxes"></i> Produtos</a>
             </li>
             <li class="nav-item mb-2">
                 <a class="nav-link" href="#"><i class="bi bi-clipboard-data"></i> Relatórios</a>

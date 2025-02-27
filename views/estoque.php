@@ -8,12 +8,8 @@ if (!isset($_SESSION["usuario"])) {
 require_once "../dao/ItemDAO.php";
 $itemDAO = new ItemDAO();
 
-$termoBusca = isset($_GET["busca"]) ? trim($_GET["busca"]) : "";
-$itens = $itemDAO->listarItens($termoBusca);
-
-// Estatísticas simuladas (você pode pegar esses dados do banco depois)
-$totalItens = 1234;
-$itensBaixoEstoque = 27;
+$itens = $itemDAO->listarEstoque();
+$usuario = $_SESSION["usuario"]; // Pegando os dados do usuário para exibir na navbar
 ?>
 
 <!DOCTYPE html>
@@ -22,9 +18,11 @@ $itensBaixoEstoque = 27;
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estoque - Estoque IFSul</title>
+    
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../public/styles.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
 </head>
 <body>
 
@@ -42,96 +40,100 @@ $itensBaixoEstoque = 27;
                 <a class="nav-link" href="cadastro_item.php"><i class="bi bi-plus-circle"></i> Cadastrar Item</a>
             </li>
             <li class="nav-item mb-2">
-                <a class="nav-link" href="relatorios.php"><i class="bi bi-clipboard-data"></i> Relatórios</a>
+                <a class="nav-link" href="movimentacao.php"><i class="bi bi-arrow-left-right"></i> Movimentação</a>
             </li>
         </ul>
     </div>
 
-    <!-- Barra Superior -->
-    <nav class="navbar navbar-light">
-        <div class="container-fluid d-flex justify-content-between">
-            <h2 class="fw-bold"><i class="bi bi-box"></i> Estoque</h2>
-            <div>
-                <a href="cadastro_item.php" class="btn btn-success"><i class="bi bi-plus-lg"></i> Novo Produto</a>
+    <!-- Barra Superior (igual ao dashboard.php) -->
+    <nav class="navbar navbar-light bg-light px-3">
+        <div class="container-fluid d-flex justify-content-end">
+            <!-- Dropdown do usuário -->
+            <div class="dropdown">
+                <a class="nav-link dropdown-toggle text-dark" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    👤 <?= htmlspecialchars($usuario["nome"]); ?>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="perfil.php"><i class="bi bi-person-circle"></i> Meu Perfil</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="../dao/logout.php"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
+                </ul>
             </div>
         </div>
     </nav>
 
     <!-- Conteúdo Principal -->
-<div class="main-content">
-    <!-- Cards de Estatísticas -->
-    <div class="row g-4 mb-4 w-100">
-        <div class="col-md-6">
-            <div class="card stat-card">
-                <div class="card-body">
-                    <h5 class="card-title text-primary"><i class="bi bi-box"></i> Total de Itens</h5>
-                    <h2 class="card-text"><?= number_format($totalItens, 0, ',', '.'); ?></h2>
-                    <span class="text-success"><i class="bi bi-arrow-up"></i> 12%</span> vs mês anterior
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="card stat-card">
-                <div class="card-body">
-                    <h5 class="card-title text-warning"><i class="bi bi-exclamation-triangle"></i> Baixo Estoque</h5>
-                    <h2 class="card-text"><?= number_format($itensBaixoEstoque, 0, ',', '.'); ?></h2>
-                    <span class="text-danger"><i class="bi bi-arrow-down"></i> 5%</span> itens críticos
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Barra de Pesquisa -->
-    <div class="d-flex justify-content-between align-items-center mb-3 w-100">
-        <h4 class="fw-bold">📦 Lista de Itens no Estoque</h4>
-        <form action="estoque.php" method="GET" class="d-flex">
-            <input type="text" class="form-control me-2" name="busca" placeholder="Buscar por nome" value="<?= htmlspecialchars($termoBusca); ?>">
-            <button type="submit" class="btn btn-primary-custom"><i class="bi bi-search"></i></button>
-        </form>
-    </div>
-
-    <!-- Tabela de Itens -->
-    <div class="table-responsive table-custom w-100">
-        <table class="table table-hover">
-            <thead>
-                <tr>
-                    <th>Imagem</th>
-                    <th>Nome</th>
-                    <th>Código</th>
-                    <th>Quantidade</th>
-                    <th>Validade</th>
-                    <th>Categoria</th>
-                </tr>
-            </thead>
-            <tbody>
-                <?php if (empty($itens)): ?>
+    <div class="main-content">
+        <div class="table-responsive table-custom w-100">
+            <table id="tabelaEstoque" class="table table-striped table-bordered dataTable">
+                <thead>
                     <tr>
-                        <td colspan="6" class="text-center">Nenhum item encontrado.</td>
+                        <th>Imagem</th>
+                        <th>Nome</th>
+                        <th>Estoque Atual</th>
+                        <th>Estoque Crítico</th>
+                        <th>Validade</th>
                     </tr>
-                <?php else: ?>
+                </thead>
+                <tbody>
                     <?php foreach ($itens as $item): ?>
                         <tr>
                             <td>
                                 <img src="../uploads/<?= !empty($item["imagem"]) ? htmlspecialchars($item["imagem"]) : 'default.png'; ?>" 
                                      alt="Imagem do item" 
-                                     class="item-img">
+                                     class="item-img"
+                                     this.alt='Imagem não encontrada';">
                             </td>
                             <td><?= htmlspecialchars($item["nome"]); ?></td>
-                            <td><?= htmlspecialchars($item["codigo"]); ?></td>
-                            <td><?= htmlspecialchars($item["quantidadeEstoque"]); ?></td>
-                            <td><?= $item["dataValidade"] ? date("d/m/Y", strtotime($item["dataValidade"])) : "Sem validade"; ?></td>
-                            <td><?= htmlspecialchars($item["categoria_nome"]); ?></td>
+                            <td><?= htmlspecialchars($item["estoque_atual"]); ?></td>
+                            <td><?= ($item["estoqueCritico"] !== null) ? htmlspecialchars($item["estoqueCritico"]) : '—'; ?></td>
+                            <td>
+                                <?php if (!empty($item["validade"])): ?>
+                                    <span class="badge bg-success">
+                                        <?= date("d/m/Y", strtotime($item["validade"])); ?>
+                                    </span>
+                                <?php else: ?>
+                                    <span class="badge bg-secondary">Não Perecível</span>
+                                <?php endif; ?>
+                            </td>
+
                         </tr>
                     <?php endforeach; ?>
-                <?php endif; ?>
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
     </div>
-</div>
 
-
-
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- DataTables JS -->
+    <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            $('#tabelaEstoque').DataTable({
+                pageLength: 10, // Itens por página
+                lengthMenu: [10, 25, 50, 100], // Opções de quantidade de registros
+                order: [[1, 'asc']], // Ordenar por nome
+                responsive: true, // Tabela responsiva
+                language: {
+                    search: "Pesquisar:",
+                    lengthMenu: "Mostrar _MENU_ registros por página",
+                    info: "Mostrando _START_ a _END_ de _TOTAL_ registros",
+                    infoFiltered: "(filtrado de _MAX_ no total)",
+                    paginate: {
+                        first: "Primeiro",
+                        last: "Último",
+                        next: "Próximo",
+                        previous: "Anterior"
+                    }
+                },
+                ordering: true,
+            });
+        });
+    </script>
+
 </body>
 </html>
