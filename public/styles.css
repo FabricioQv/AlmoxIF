@@ -30,6 +30,7 @@ body {
 .sidebar h3 {
     color: var(--light-color);
     font-weight: bold;
+    margin-top: 10px
 }
 
 .sidebar .nav-link {
@@ -126,11 +127,49 @@ body {
     white-space: nowrap;
     border-bottom: 1px solid var(--border-color);
     font-size: 16px;
+    white-space: normal !important;
+    word-wrap: break-word;
+}
+
+td.dt-nowrap {
+    white-space: normal !important;
+    word-wrap: break-word;
+    max-width: 250px; /* Ajuste conforme necessário */
+}
+
+
+.table td, .table th {
+    white-space: normal !important;
+    word-wrap: break-word;
 }
 
 /* Ajuste para Linhas Alternadas */
 .dataTable tbody tr:nth-child(even) {
     background-color: rgba(50, 205, 50, 0.1);
+}
+
+.logo-sidebar {   
+    max-width: 140px;  /* Limita o tamanho máximo */
+    height: auto;  /* Mantém a proporção */
+    display: block;
+    margin: 10px auto; /* Centraliza e adiciona espaçamento */
+    border-radius: 5px; /* (Opcional) Arredonda cantos se necessário */
+}
+
+.sub-menu {
+    display: none;
+    padding-left: 20px;
+}
+
+/* Estilo quando o submenu está aberto */
+.sub-menu.show {
+    display: block;
+}
+
+/* Ajuste para os itens principais */
+.toggle-menu {
+    cursor: pointer;
+    font-weight: bold;
 }
 
 /* Efeito Hover nas Linhas */

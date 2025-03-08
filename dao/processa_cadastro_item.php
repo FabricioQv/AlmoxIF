@@ -11,16 +11,18 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $nome = trim($_POST["nome"]);
     $codigo = trim($_POST["codigo"]);
     $quantidade = intval($_POST["quantidade"]);
-    $validade = !empty($_POST["validade"]) ? $_POST["validade"] : null;
     $categoria = intval($_POST["categoria"]);
-    $estoqueCritico = isset($_POST["estoqueCritico"]) && $_POST["estoqueCritico"] !== "" ? intval($_POST["estoqueCritico"]) : null;
 
-    // Processamento da imagem
+    // Definição de valores opcionais
+    $estoqueCritico = isset($_POST["estoqueCritico"]) && $_POST["estoqueCritico"] !== "" ? intval($_POST["estoqueCritico"]) : null;
+    $validade = !empty($_POST["validade"]) ? $_POST["validade"] : null;
     $imagemNome = null;
+
+    // Verifica se uma imagem foi enviada
     if (!empty($_FILES["imagem"]["name"])) {
         $extensao = strtolower(pathinfo($_FILES["imagem"]["name"], PATHINFO_EXTENSION));
-        $extensoesPermitidas = ["jpg", "jpeg", "png", "gif"];
-        
+        $extensoesPermitidas = ["jpg", "jpeg", "png", "gif", "webp"];
+
         if (in_array($extensao, $extensoesPermitidas)) {
             $imagemNome = uniqid("item_") . "." . $extensao;
             move_uploaded_file($_FILES["imagem"]["tmp_name"], "../uploads/" . $imagemNome);
@@ -39,7 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     // Cadastrar o item no banco de dados
-    $sucesso = $itemDAO->cadastrarItem($nome, $codigo, $quantidade, $validade, $categoria, $imagemNome, $estoqueCritico);
+    $sucesso = $itemDAO->cadastrarItem($nome, $codigo, $categoria, $estoqueCritico, $quantidade, $validade, $imagemNome);
 
     if ($sucesso) {
         header("Location: ../views/cadastro_item.php?sucesso=1");
@@ -49,3 +51,4 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit();
     }
 }
+?>

@@ -1,6 +1,8 @@
 <?php
 session_start();
 require_once "../dao/Database.php";
+require_once "../classes/Movimento.php";
+require_once "../dao/MovimentoDAO.php";
 
 if (!isset($_SESSION["usuario"])) {
     header("Location: ../views/login.php");
@@ -9,6 +11,7 @@ if (!isset($_SESSION["usuario"])) {
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $itemId = intval($_POST["item"]);
+    $usuarioId = $_SESSION["usuario"]["id_usuario"]; // Obtendo o usuário logado
     $tipo = $_POST["tipo"];
     $quantidade = intval($_POST["quantidade"]);
     $validade = !empty($_POST["validade"]) ? $_POST["validade"] : null;
@@ -20,34 +23,23 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     try {
-        $conn = (new Database())->connect();
-        $conn->beginTransaction();
-
-        // Inserir movimentação
-        $sqlMov = "INSERT INTO movimentacao (fk_item_id, tipo, quantidade, validade, observacao) 
-                   VALUES (:itemId, :tipo, :quantidade, :validade, :observacao)";
-        $stmtMov = $conn->prepare($sqlMov);
-        $stmtMov->bindParam(":itemId", $itemId);
-        $stmtMov->bindParam(":tipo", $tipo);
-        $stmtMov->bindParam(":quantidade", $quantidade);
-        $stmtMov->bindParam(":observacao", $observacao);
-
-        // Corrigido o tratamento da validade
-        if (!empty($validade)) {
-            $stmtMov->bindParam(":validade", $validade);
-        } else {
-            $stmtMov->bindValue(":validade", null, PDO::PARAM_NULL);
+        $movimento = new Movimento($itemId, $usuarioId, $tipo, $quantidade, $validade, $observacao);
+        $dao = new MovimentoDAO();
+        
+        if ($tipo === "entrada") {
+            $sucesso = $dao->registrarMovimento($movimento);
+        } elseif ($tipo === "saida") {
+            $sucesso = $dao->removerItemFIFO($itemId, $quantidade, $observacao);
         }
-
-        $stmtMov->execute();
-        $conn->commit();
-
-        header("Location: ../views/movimentacao.php?sucesso=1");
+        
+        if ($sucesso) {
+            header("Location: ../views/movimentacao.php?sucesso=1");
+        } else {
+            header("Location: ../views/movimentacao.php?erro=1");
+        }
         exit();
     } catch (Exception $e) {
-        $conn->rollBack();
-        header("Location: ../views/movimentacao.php?erro=bd&msg=" . urlencode($e->getMessage()));
+        header("Location: ../views/movimentacao.php?erro=1");
         exit();
     }
 }
-?>

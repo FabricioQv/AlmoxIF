@@ -1,11 +1,15 @@
 <?php
 session_start();
+require_once "../dao/MovimentoDAO.php";
+
 if (!isset($_SESSION["usuario"])) {
     header("Location: login.php");
     exit();
 }
 
-$usuario = $_SESSION["usuario"];
+$movimentoDAO = new MovimentoDAO();
+$dadosMovimentacao = $movimentoDAO->obterMovimentacaoMensal();
+$itensMaisMovimentados = $movimentoDAO->obterItensMaisMovimentados();
 ?>
 
 <!DOCTYPE html>
@@ -14,53 +18,112 @@ $usuario = $_SESSION["usuario"];
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard - Estoque IFSul</title>
-    <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../public/styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h3 class="mb-4"><i class="bi bi-box-seam"></i> Estoque IFSul</h3>
-        <ul class="nav flex-column">
-            <li class="nav-item mb-2">
-                <a class="nav-link active" href="dashboard.php"><i class="bi bi-house-door"></i> Dashboard</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link" href="estoque.php"><i class="bi bi-boxes"></i> Produtos</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link" href="relatorios.php"><i class="bi bi-clipboard-data"></i> Relatórios</a>
-            </li>
-        </ul>
-    </div>
+    <?php include 'sidebar.php'; ?>
+    <?php include 'navbar.php'; ?>
 
-    <!-- Barra Superior -->
-    <nav class="navbar navbar-light bg-light px-3">
-        <div class="container-fluid d-flex justify-content-end">
-            <!-- Dropdown do usuário -->
-            <div class="dropdown">
-                <a class="nav-link dropdown-toggle text-dark" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    👤 <?= htmlspecialchars($usuario["nome"]); ?>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item" href="perfil.php"><i class="bi bi-person-circle"></i> Meu Perfil</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-danger" href="../dao/logout.php"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
-                </ul>
+    <div class="main-content">
+        <h2 class="fw-bold mb-4"><i class="bi bi-bar-chart"></i> Dashboard</h2>
+
+        <div class="row">
+            <!-- Gráfico de Barras: Entradas e Saídas Mensais -->
+            <div class="col-md-8 mb-4">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <i class="bi bi-graph-up"></i> Movimentação Mensal
+                    </div>
+                    <div class="card-body">
+                        <canvas id="movimentacaoChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Gráfico de Pizza: Itens Mais Movimentados -->
+            <div class="col-md-4 mb-4">
+                <div class="card">
+                    <div class="card-header bg-success text-white">
+                        <i class="bi bi-box-seam"></i> Itens Mais Movimentados
+                    </div>
+                    <div class="card-body">
+                        <canvas id="itensMaisMovimentadosChart"></canvas>
+                    </div>
+                </div>
             </div>
         </div>
-    </nav>
-
-    <!-- Conteúdo Principal -->
-    <div class="main-content">
-        <h2>Bem-vindo, <?= htmlspecialchars($usuario["nome"]); ?>! 🎉</h2>
-        <p>Use o menu lateral para acessar as funcionalidades do sistema.</p>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            let movimentacaoData = <?= json_encode($dadosMovimentacao); ?>;
+            let itensMaisMovData = <?= json_encode($itensMaisMovimentados); ?>;
+
+            // Garantindo que há dados antes de tentar criar os gráficos
+            if (movimentacaoData.length > 0) {
+                let meses = movimentacaoData.map(m => m.mes);
+                let entradas = movimentacaoData.map(m => parseInt(m.total_entrada) || 0);
+                let saidas = movimentacaoData.map(m => parseInt(m.total_saida) || 0);
+
+                let ctx1 = document.getElementById("movimentacaoChart").getContext("2d");
+                new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: meses,
+                        datasets: [
+                            {
+                                label: 'Entradas',
+                                backgroundColor: 'rgba(72, 201, 176, 0.7)',
+                                borderColor: 'rgba(72, 201, 176, 1)',
+                                borderWidth: 1,
+                                data: entradas
+                            },
+                            {
+                                label: 'Saídas',
+                                backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                                borderColor: 'rgba(255, 99, 132, 1)',
+                                borderWidth: 1,
+                                data: saidas
+                            }
+                        ]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            }
+
+            if (itensMaisMovData.length > 0) {
+                let itemLabels = itensMaisMovData.map(item => item.item_nome);
+                let itemQuantidades = itensMaisMovData.map(item => parseInt(item.total_movimentado) || 0);
+
+                let ctx2 = document.getElementById("itensMaisMovimentadosChart").getContext("2d");
+                new Chart(ctx2, {
+                    type: 'pie',
+                    data: {
+                        labels: itemLabels,
+                        datasets: [{
+                            data: itemQuantidades,
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.7)',
+                                'rgba(54, 162, 235, 0.7)',
+                                'rgba(255, 206, 86, 0.7)',
+                                'rgba(75, 192, 192, 0.7)',
+                                'rgba(153, 102, 255, 0.7)'
+                            ]
+                        }]
+                    }
+                });
+            }
+        });
+    </script>
 </body>
 </html>

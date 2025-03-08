@@ -5,11 +5,16 @@ if (!isset($_SESSION["usuario"])) {
     exit();
 }
 
-require_once "../dao/ItemDAO.php";
-$itemDAO = new ItemDAO();
+require_once "../dao/MovimentoDAO.php";
+$movimentoDAO = new MovimentoDAO();
 
-$itens = $itemDAO->listarEstoque();
+$itens = $movimentoDAO->listarEstoque();
 $usuario = $_SESSION["usuario"]; // Pegando os dados do usuário para exibir na navbar
+$itensBaixos = array_filter($itens, function ($item) {
+    return $item["estoque_baixo"] == 1;
+});
+
+
 ?>
 
 <!DOCTYPE html>
@@ -23,44 +28,11 @@ $usuario = $_SESSION["usuario"]; // Pegando os dados do usuário para exibir na 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../public/styles.css">
     <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.13.5/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
 </head>
 <body>
-
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h3 class="mb-4"><i class="bi bi-box-seam"></i> Estoque IFSul</h3>
-        <ul class="nav flex-column">
-            <li class="nav-item mb-2">
-                <a class="nav-link" href="dashboard.php"><i class="bi bi-house-door"></i> Dashboard</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link active" href="estoque.php"><i class="bi bi-boxes"></i> Estoque</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link" href="cadastro_item.php"><i class="bi bi-plus-circle"></i> Cadastrar Item</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link" href="movimentacao.php"><i class="bi bi-arrow-left-right"></i> Movimentação</a>
-            </li>
-        </ul>
-    </div>
-
-    <!-- Barra Superior (igual ao dashboard.php) -->
-    <nav class="navbar navbar-light bg-light px-3">
-        <div class="container-fluid d-flex justify-content-end">
-            <!-- Dropdown do usuário -->
-            <div class="dropdown">
-                <a class="nav-link dropdown-toggle text-dark" href="#" role="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                    👤 <?= htmlspecialchars($usuario["nome"]); ?>
-                </a>
-                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                    <li><a class="dropdown-item" href="perfil.php"><i class="bi bi-person-circle"></i> Meu Perfil</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li><a class="dropdown-item text-danger" href="../dao/logout.php"><i class="bi bi-box-arrow-right"></i> Sair</a></li>
-                </ul>
-            </div>
-        </div>
-    </nav>
+    <?php include "sidebar.php"; ?> 
+    <?php include "navbar.php"; ?>
 
     <!-- Conteúdo Principal -->
     <div class="main-content">
@@ -69,40 +41,59 @@ $usuario = $_SESSION["usuario"]; // Pegando os dados do usuário para exibir na 
                 <thead>
                     <tr>
                         <th>Imagem</th>
+                        <th>Codigo</th>
                         <th>Nome</th>
                         <th>Estoque Atual</th>
                         <th>Estoque Crítico</th>
-                        <th>Validade</th>
+                        <th>Validade Mais Próxima</th>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($itens as $item): ?>
-                        <tr>
+                        <tr class="<?= $item['estoque_baixo'] ? 'table-danger' : '' ?>">
                             <td>
                                 <img src="../uploads/<?= !empty($item["imagem"]) ? htmlspecialchars($item["imagem"]) : 'default.png'; ?>" 
-                                     alt="Imagem do item" 
-                                     class="item-img"
-                                     this.alt='Imagem não encontrada';">
+                                    alt="Imagem do item" 
+                                    class="item-img"
+                                    onerror="this.src='../uploads/default.png'; this.alt='Imagem não encontrada';">
                             </td>
+                            <td><?= htmlspecialchars($item["codigo"]); ?></td>
                             <td><?= htmlspecialchars($item["nome"]); ?></td>
-                            <td><?= htmlspecialchars($item["estoque_atual"]); ?></td>
+                            <td><?= htmlspecialchars($item["estoque_atual"] ?? 0); ?></td>
                             <td><?= ($item["estoqueCritico"] !== null) ? htmlspecialchars($item["estoqueCritico"]) : '—'; ?></td>
                             <td>
-                                <?php if (!empty($item["validade"])): ?>
-                                    <span class="badge bg-success">
-                                        <?= date("d/m/Y", strtotime($item["validade"])); ?>
-                                    </span>
-                                <?php else: ?>
-                                    <span class="badge bg-secondary">Não Perecível</span>
-                                <?php endif; ?>
+                                <?php 
+                                    $validade = $item["validade_mais_proxima"] ?? null;
+                                    if ($validade && $item["estoque_atual"] > 0) {
+                                        $hoje = date("Y-m-d");
+                                        $diferenca = (strtotime($validade) - strtotime($hoje)) / (60 * 60 * 24);
+                                        $cor = ($diferenca <= 30) ? "bg-danger text-white" : "bg-success";
+                                        echo "<span class='badge $cor'>" . date("d/m/Y", strtotime($validade)) . "</span>";
+                                    } else {
+                                        echo "<span class='badge bg-secondary'>Não Perecível</span>";
+                                    }
+                                ?>
                             </td>
-
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
     </div>
+
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <?php if (!empty($itensBaixos)): ?>
+            <div id="estoqueBaixoToast" class="toast align-items-center text-bg-warning border-0 show" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ⚠️ Atenção! Alguns itens estão abaixo do estoque crítico.
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -114,10 +105,10 @@ $usuario = $_SESSION["usuario"]; // Pegando os dados do usuário para exibir na 
     <script>
         $(document).ready(function() {
             $('#tabelaEstoque').DataTable({
-                pageLength: 10, // Itens por página
-                lengthMenu: [10, 25, 50, 100], // Opções de quantidade de registros
-                order: [[1, 'asc']], // Ordenar por nome
-                responsive: true, // Tabela responsiva
+                pageLength: 10,
+                lengthMenu: [10, 25, 50, 100],
+                order: [[1, 'asc']],
+                responsive: true,
                 language: {
                     search: "Pesquisar:",
                     lengthMenu: "Mostrar _MENU_ registros por página",
@@ -133,7 +124,14 @@ $usuario = $_SESSION["usuario"]; // Pegando os dados do usuário para exibir na 
                 ordering: true,
             });
         });
-    </script>
 
+        document.addEventListener("DOMContentLoaded", function () {
+        let toastEl = document.getElementById("estoqueBaixoToast");
+        if (toastEl) {
+            let toast = new bootstrap.Toast(toastEl);
+            toast.show();
+        }
+    });
+    </script>
 </body>
 </html>

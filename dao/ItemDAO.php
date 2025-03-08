@@ -15,46 +15,55 @@ class ItemDAO {
         $stmt->execute();
         return $stmt->fetchColumn() > 0;
     }
-
-    public function cadastrarItem($nome, $codigo, $categoria, $estoqueCritico, $quantidade, $validade, $perecivel) {
+    public function cadastrarItem($nome, $codigo, $categoria, $estoqueCritico, $quantidade, $validade, $imagemNome) {
         try {
             $this->conn->beginTransaction();
-
-            // 1️⃣ Inserir o Item
-            $sqlItem = "INSERT INTO item (nome, codigo, fk_categoria_id, estoqueCritico, perecivel) 
-                        VALUES (:nome, :codigo, :categoria, :estoqueCritico, :perecivel)";
+    
+            // Inserir o item no banco de dados
+            $sqlItem = "INSERT INTO item (nome, codigo, fk_Categoria_id_categoria, estoqueCritico, imagem) 
+                        VALUES (:nome, :codigo, :categoria, :estoqueCritico, :imagem)";
             $stmtItem = $this->conn->prepare($sqlItem);
-            $stmtItem->bindParam(":nome", $nome);
-            $stmtItem->bindParam(":codigo", $codigo);
-            $stmtItem->bindParam(":categoria", $categoria);
-            $stmtItem->bindParam(":estoqueCritico", $estoqueCritico);
-            $stmtItem->bindParam(":perecivel", $perecivel, PDO::PARAM_BOOL);
+            $stmtItem->bindValue(":nome", $nome, PDO::PARAM_STR);
+            $stmtItem->bindValue(":codigo", $codigo, PDO::PARAM_STR);
+            $stmtItem->bindValue(":categoria", $categoria, PDO::PARAM_INT);
+            $stmtItem->bindValue(":estoqueCritico", $estoqueCritico ?? null, PDO::PARAM_INT);
+            $stmtItem->bindValue(":imagem", $imagemNome ?? null, PDO::PARAM_STR);
+    
             $stmtItem->execute();
-
-            // Pegar o ID do item recém-criado
             $itemId = $this->conn->lastInsertId();
-
-            // 2️⃣ Registrar a Entrada Inicial na Movimentação
-            $sqlMov = "INSERT INTO movimentacao (fk_item_id, tipo, quantidade, validade) 
-                       VALUES (:itemId, 'entrada', :quantidade, :validade)";
-            $stmtMov = $this->conn->prepare($sqlMov);
-            $stmtMov->bindParam(":itemId", $itemId);
-            $stmtMov->bindParam(":quantidade", $quantidade);
-            $stmtMov->bindParam(":validade", $validade);
-
-            if (empty($validade)) {
-                $stmtMov->bindValue(":validade", null, PDO::PARAM_NULL);
+    
+            // Obtém o ID do usuário logado
+            session_start();
+            $usuarioId = $_SESSION["usuario"]["id_usuario"] ?? null;
+            if (!$usuarioId) {
+                throw new Exception("Usuário não autenticado. Impossível registrar movimentação.");
             }
-
+    
+            // Registrar movimentação com fk_usuario_id
+            $sqlMov = "INSERT INTO movimentacao (fk_item_id, fk_usuario_id, tipo, quantidade, validade) 
+                       VALUES (:itemId, :usuarioId, 'entrada', :quantidade, :validade)";
+            $stmtMov = $this->conn->prepare($sqlMov);
+            $stmtMov->bindValue(":itemId", $itemId, PDO::PARAM_INT);
+            $stmtMov->bindValue(":usuarioId", $usuarioId, PDO::PARAM_INT);
+            $stmtMov->bindValue(":quantidade", $quantidade, PDO::PARAM_INT);
+            $stmtMov->bindValue(":validade", $validade ?? null, PDO::PARAM_STR);
+    
             $stmtMov->execute();
-
             $this->conn->commit();
+    
             return true;
         } catch (Exception $e) {
             $this->conn->rollBack();
             return false;
         }
     }
+    
+    
+    
+    
+    
+    
+    
 
     public function listarItens($termoBusca = "") {
         $sql = "SELECT i.*, c.nome AS categoria_nome 
@@ -75,23 +84,29 @@ class ItemDAO {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-
+    
     public function listarEstoque() {
         $sql = "SELECT 
                     i.id_item, 
                     i.nome, 
                     i.estoqueCritico,
+                    i.imagem,
                     COALESCE(SUM(CASE WHEN m.tipo = 'entrada' THEN m.quantidade ELSE 0 END), 0) 
                   - COALESCE(SUM(CASE WHEN m.tipo = 'saida' THEN m.quantidade ELSE 0 END), 0) 
                     AS estoque_atual,
-                    COALESCE((
-                        SELECT m2.validade 
-                        FROM movimentacao m2 
-                        WHERE m2.fk_item_id = i.id_item 
-                        AND m2.validade IS NOT NULL 
-                        ORDER BY m2.validade DESC 
-                        LIMIT 1
-                    ), NULL) AS validade
+                    (SELECT MIN(m2.validade) 
+                     FROM movimentacao m2 
+                     WHERE m2.fk_item_id = i.id_item 
+                     AND m2.validade IS NOT NULL 
+                     AND m2.quantidade > 0
+                     ORDER BY m2.validade ASC 
+                     LIMIT 1) AS validade_mais_proxima,
+                    CASE 
+                        WHEN i.estoqueCritico IS NOT NULL AND 
+                             (COALESCE(SUM(CASE WHEN m.tipo = 'entrada' THEN m.quantidade ELSE 0 END), 0) 
+                              - COALESCE(SUM(CASE WHEN m.tipo = 'saida' THEN m.quantidade ELSE 0 END), 0)) < i.estoqueCritico
+                        THEN 1 ELSE 0 
+                    END AS estoque_baixo
                 FROM item i
                 LEFT JOIN movimentacao m ON i.id_item = m.fk_item_id
                 GROUP BY i.id_item";
@@ -100,6 +115,9 @@ class ItemDAO {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
+    
+    
     
     
     

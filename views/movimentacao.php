@@ -9,6 +9,8 @@ require_once "../dao/ItemDAO.php";
 $itemDAO = new ItemDAO();
 
 $itens = $itemDAO->listarEstoque();
+$sucesso = isset($_GET['sucesso']);
+$erro = isset($_GET['erro']);
 ?>
 
 <!DOCTYPE html>
@@ -20,35 +22,29 @@ $itens = $itemDAO->listarEstoque();
     
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link rel="stylesheet" href="../public/styles.css">
 </head>
 <body>
 
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <h3 class="mb-4"><i class="bi bi-box-seam"></i> Estoque IFSul</h3>
-        <ul class="nav flex-column">
-            <li class="nav-item mb-2">
-                <a class="nav-link" href="dashboard.php"><i class="bi bi-house-door"></i> Dashboard</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link" href="estoque.php"><i class="bi bi-boxes"></i> Estoque</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link" href="cadastro_item.php"><i class="bi bi-plus-circle"></i> Cadastrar Item</a>
-            </li>
-            <li class="nav-item mb-2">
-                <a class="nav-link active" href="movimentacao.php"><i class="bi bi-arrow-left-right"></i> Movimentação</a>
-            </li>
-        </ul>
-    </div>
+    <?php include "sidebar.php"; ?> 
+    <?php include "navbar.php"; ?>
 
-    <!-- Barra Superior -->
-    <nav class="navbar navbar-light">
-        <div class="container-fluid d-flex justify-content-between">
-            <h2 class="fw-bold"><i class="bi bi-arrow-left-right"></i> Movimentação de Estoque</h2>
+    <!-- Toast de Sucesso/Erro -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <div id="toastSucesso" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false" style="display: none;">
+            <div class="d-flex">
+                <div class="toast-body">Movimentação registrada com sucesso!</div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
         </div>
-    </nav>
+        <div id="toastErro" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false" style="display: none;">
+            <div class="d-flex">
+                <div class="toast-body">Erro ao registrar movimentação!</div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+        </div>
+    </div>
 
     <!-- Conteúdo Principal -->
     <div class="main-content">
@@ -56,47 +52,82 @@ $itens = $itemDAO->listarEstoque();
             <h2><i class="bi bi-arrow-left-right"></i> Registrar Movimentação</h2>
 
             <!-- Formulário de Movimentação -->
-            <form action="../dao/processa_movimentacao.php" method="POST">
-                <div class="mb-3">
-                    <label for="item" class="form-label">Selecione o Item</label>
-                    <select class="form-control" id="item" name="item" required>
-                        <option value="">Escolha um item</option>
-                        <?php foreach ($itens as $item): ?>
-                            <option value="<?= $item['id_item']; ?>">
-                                <?= htmlspecialchars($item['nome']) . " - Estoque: " . $item['estoque_atual']; ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
+            <div class="card p-4">
+                <form action="../dao/processa_movimentacao.php" method="POST">
+                    <div class="mb-3">
+                        <label for="item" class="form-label">Selecione o Item</label>
+                        <select class="form-control" id="item" name="item" required>
+                            <option value="">Escolha um item</option>
+                            <?php foreach ($itens as $item): ?>
+                                <option value="<?= $item['id_item']; ?>">
+                                    <?= htmlspecialchars($item['nome']) . " - Estoque: " . $item['estoque_atual']; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
 
-                <div class="mb-3">
-                    <label for="tipo" class="form-label">Tipo de Movimentação</label>
-                    <select class="form-control" id="tipo" name="tipo" required>
-                        <option value="entrada">Entrada</option>
-                        <option value="saida">Saída</option>
-                    </select>
-                </div>
+                    <div class="mb-3">
+                        <label for="tipo" class="form-label">Tipo de Movimentação</label>
+                        <select class="form-control" id="tipo" name="tipo" required onchange="toggleValidade()">
+                            <option value="entrada">Entrada</option>
+                            <option value="saida">Saída</option>
+                        </select>
+                    </div>
 
-                <div class="mb-3">
-                    <label for="quantidade" class="form-label">Quantidade</label>
-                    <input type="number" class="form-control" id="quantidade" name="quantidade" required min="1">
-                </div>
+                    <div class="mb-3">
+                        <label for="quantidade" class="form-label">Quantidade</label>
+                        <input type="number" class="form-control" id="quantidade" name="quantidade" required min="1">
+                    </div>
 
-                <div class="mb-3">
-                    <label for="validade" class="form-label">Data de Validade (Opcional)</label>
-                    <input type="date" class="form-control" id="validade" name="validade">
-                </div>
+                    <div class="mb-3" id="validadeContainer">
+                        <label for="validade" class="form-label">Data de Validade (Opcional)</label>
+                        <input type="date" class="form-control" id="validade" name="validade">
+                    </div>
 
-                <button type="submit" class="btn btn-primary-custom"><i class="bi bi-save"></i> Registrar Movimentação</button>
-            </form>
+                    <div class="mb-3">
+                        <label for="observacao" class="form-label">Observação (Opcional)</label>
+                        <textarea class="form-control" id="observacao" name="observacao" rows="3"></textarea>
+                    </div>
 
-            <div class="btn-group-custom">
-                <a href="estoque.php" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Voltar</a>
+                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-save"></i> Registrar Movimentação</button>
+                </form>
+            </div>
+
+            <div class="btn-group-custom mt-3">
+                <a href="estoque.php" class="btn btn-secondary w-100"><i class="bi bi-arrow-left"></i> Voltar</a>
             </div>
         </div>
     </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleValidade() {
+            let tipo = document.getElementById("tipo").value;
+            let validadeContainer = document.getElementById("validadeContainer");
+            validadeContainer.style.display = tipo === "entrada" ? "block" : "none";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            toggleValidade();
+
+            let toastSucesso = document.getElementById('toastSucesso');
+            let toastErro = document.getElementById('toastErro');
+
+            if (toastSucesso && <?= $sucesso ? 'true' : 'false' ?>) {
+                toastSucesso.style.display = 'block';
+                let toast = new bootstrap.Toast(toastSucesso);
+                toast.show();
+                setTimeout(() => toastSucesso.remove(), 5000);
+            }
+
+            if (toastErro && <?= $erro ? 'true' : 'false' ?>) {
+                toastErro.style.display = 'block';
+                let toast = new bootstrap.Toast(toastErro);
+                toast.show();
+                setTimeout(() => toastErro.remove(), 5000);
+            }
+        });
+    </script>
 </body>
 </html>
