@@ -46,6 +46,7 @@ $itensBaixos = array_filter($itens, function ($item) {
                         <th>Estoque Atual</th>
                         <th>Estoque Crítico</th>
                         <th>Validade Mais Próxima</th>
+                        <th>Editar</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -74,6 +75,11 @@ $itensBaixos = array_filter($itens, function ($item) {
                                     }
                                 ?>
                             </td>
+                            <td>
+                                <a href="editar_item.php?id=<?= $item['id_item']; ?>" class="btn btn-sm btn-warning">
+                                    <i class="bi bi-pencil"></i> Editar
+                            </a>
+                        </td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>

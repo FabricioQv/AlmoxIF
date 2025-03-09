@@ -1,4 +1,10 @@
 <?php
+session_start();
+if (!isset($_SESSION["usuario"]) || $_SESSION["usuario"]["fk_Role_id_role"] != 1) {
+    header("Location: login.php");
+    exit();
+}
+
 require_once "../dao/RoleDAO.php";
 
 $roleDAO = new RoleDAO();

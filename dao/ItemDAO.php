@@ -116,6 +116,42 @@ class ItemDAO {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
+    public function buscarItemPorId($id) {
+        $sql = "SELECT * FROM item WHERE id_item = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":id", $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function atualizarItem($id, $nome, $codigo, $estoqueCritico, $imagemNome) {
+        try {
+            $sql = "UPDATE item SET nome = :nome, codigo = :codigo, estoqueCritico = :estoqueCritico";
+    
+            // Se houver uma nova imagem, adicionamos o campo à query
+            if ($imagemNome !== null) {
+                $sql .= ", imagem = :imagem";
+            }
+    
+            $sql .= " WHERE id_item = :id";
+    
+            $stmt = $this->conn->prepare($sql);
+            $stmt->bindParam(":nome", $nome);
+            $stmt->bindParam(":codigo", $codigo);
+            $stmt->bindValue(":estoqueCritico", $estoqueCritico, PDO::PARAM_INT);
+            $stmt->bindParam(":id", $id);
+    
+            if ($imagemNome !== null) {
+                $stmt->bindParam(":imagem", $imagemNome);
+            }
+    
+            return $stmt->execute();
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    
+    
     
     
     
