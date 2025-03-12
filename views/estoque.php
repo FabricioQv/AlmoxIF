@@ -43,6 +43,7 @@ $itensBaixos = array_filter($itens, function ($item) {
                         <th>Imagem</th>
                         <th>Codigo</th>
                         <th>Nome</th>
+                        <th>Categoria</th>
                         <th>Estoque Atual</th>
                         <th>Estoque Crítico</th>
                         <th>Validade Mais Próxima</th>
@@ -60,6 +61,7 @@ $itensBaixos = array_filter($itens, function ($item) {
                             </td>
                             <td><?= htmlspecialchars($item["codigo"]); ?></td>
                             <td><?= htmlspecialchars($item["nome"]); ?></td>
+                            <td><?= htmlspecialchars($item["categoria_nome"]); ?></td>
                             <td><?= htmlspecialchars($item["estoque_atual"] ?? 0); ?></td>
                             <td><?= ($item["estoqueCritico"] !== null) ? htmlspecialchars($item["estoqueCritico"]) : '—'; ?></td>
                             <td>

@@ -148,6 +148,7 @@ class MovimentoDAO {
                     i.codigo,
                     i.estoqueCritico,
                     i.imagem,
+                    c.nome AS categoria_nome,
                     COALESCE(SUM(CASE WHEN m.tipo = 'entrada' THEN m.quantidade ELSE 0 END), 0) 
                   - COALESCE(SUM(CASE WHEN m.tipo = 'saida' THEN m.quantidade ELSE 0 END), 0) 
                     AS estoque_atual,
@@ -166,12 +167,14 @@ class MovimentoDAO {
                     END AS estoque_baixo
                 FROM item i
                 LEFT JOIN movimentacao m ON i.id_item = m.fk_item_id
-                GROUP BY i.id_item";
-        
+                LEFT JOIN categoria c ON i.fk_Categoria_id_categoria = c.id_categoria 
+                GROUP BY i.id_item, c.nome";
+    
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    
     
     
     public function removerItemFIFO($item_id, $quantidade, $observacao) {

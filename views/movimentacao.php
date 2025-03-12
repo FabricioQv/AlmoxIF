@@ -23,6 +23,8 @@ $erro = isset($_GET['erro']);
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
+    
     <link rel="stylesheet" href="../public/styles.css">
 </head>
 <body>
@@ -32,18 +34,23 @@ $erro = isset($_GET['erro']);
 
     <!-- Toast de Sucesso/Erro -->
     <div class="toast-container position-fixed top-0 end-0 p-3">
-        <div id="toastSucesso" class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false" style="display: none;">
-            <div class="d-flex">
-                <div class="toast-body">Movimentação registrada com sucesso!</div>
-                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        <?php if ($sucesso): ?>
+            <div class="toast align-items-center text-bg-success border-0 show" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">✅ Movimentação registrada com sucesso!</div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
             </div>
-        </div>
-        <div id="toastErro" class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true" data-bs-autohide="false" style="display: none;">
-            <div class="d-flex">
-                <div class="toast-body">Erro ao registrar movimentação!</div>
-                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+        <?php endif; ?>
+
+        <?php if ($erro): ?>
+            <div class="toast align-items-center text-bg-danger border-0 show" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">❌ Erro ao registrar movimentação!</div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
             </div>
-        </div>
+        <?php endif; ?>
     </div>
 
     <!-- Conteúdo Principal -->
@@ -56,11 +63,12 @@ $erro = isset($_GET['erro']);
                 <form action="../dao/processa_movimentacao.php" method="POST">
                     <div class="mb-3">
                         <label for="item" class="form-label">Selecione o Item</label>
-                        <select class="form-control" id="item" name="item" required>
+                        <select class="form-control item-select" id="item" name="item" required>
                             <option value="">Escolha um item</option>
                             <?php foreach ($itens as $item): ?>
-                                <option value="<?= $item['id_item']; ?>">
-                                    <?= htmlspecialchars($item['nome']) . " - Estoque: " . $item['estoque_atual']; ?>
+                                <option value="<?= $item['id_item']; ?>" 
+                                        title="<?= htmlspecialchars($item['nome']) . " - Estoque: " . $item['estoque_atual']; ?>">
+                                    <?= htmlspecialchars($item['nome']); ?> - (Estoque: <?= $item['estoque_atual']; ?>)
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -101,6 +109,8 @@ $erro = isset($_GET['erro']);
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
     <script>
         function toggleValidade() {
             let tipo = document.getElementById("tipo").value;
@@ -110,24 +120,15 @@ $erro = isset($_GET['erro']);
 
         document.addEventListener("DOMContentLoaded", function () {
             toggleValidade();
-
-            let toastSucesso = document.getElementById('toastSucesso');
-            let toastErro = document.getElementById('toastErro');
-
-            if (toastSucesso && <?= $sucesso ? 'true' : 'false' ?>) {
-                toastSucesso.style.display = 'block';
-                let toast = new bootstrap.Toast(toastSucesso);
-                toast.show();
-                setTimeout(() => toastSucesso.remove(), 5000);
-            }
-
-            if (toastErro && <?= $erro ? 'true' : 'false' ?>) {
-                toastErro.style.display = 'block';
-                let toast = new bootstrap.Toast(toastErro);
-                toast.show();
-                setTimeout(() => toastErro.remove(), 5000);
-            }
         });
+
+        $(document).ready(function () {
+        $('#item').select2({
+            placeholder: "Escolha um item",
+            allowClear: true,
+            width: '100%'
+        });
+    });
     </script>
 </body>
 </html>

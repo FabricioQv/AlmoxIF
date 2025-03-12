@@ -39,6 +39,12 @@
                 <a class="nav-link" href="cadastro_usuario.php"><i class="bi bi-person-plus"></i> Cadastrar Usuário</a>
             </li>
          <?php endif; ?>
+         <?php if ($_SESSION["usuario"]["fk_Role_id_role"] == 1): ?>
+            <li class="nav-item mb-2">
+                <a class="nav-link" href="importar_csv.php"><i class="bi bi-upload"></i> Importar CSV</a>
+            </li>
+        <?php endif; ?>
+
 
     </ul>
 </div>

@@ -148,6 +148,63 @@ td.dt-nowrap {
     background-color: rgba(50, 205, 50, 0.1);
 }
 
+/* Ajuste para que o select fique responsivo e legível */
+.item-select {
+    font-size: 14px;
+    white-space: nowrap; /* Evita quebras de linha dentro do select */
+    overflow: hidden;
+    text-overflow: ellipsis; /* Adiciona reticências caso ultrapasse o espaço */
+}
+
+/* Torna a lista de itens mais compacta */
+.item-select option {
+    font-size: 13px;
+    padding: 5px;
+}
+
+/* Permite tooltip ao passar o mouse */
+.item-select option[title]:hover {
+    cursor: pointer;
+}
+
+/* Deixa os itens do select mais ajustados */
+.select2-container--default .select2-selection--single {
+    height: 38px;
+    padding: 5px;
+    font-size: 14px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Garante que os itens da dropdown tenham largura correta */
+.select2-dropdown {
+    font-size: 14px;
+}
+
+/* Melhora a experiência visual */
+.select2-container .select2-selection--single .select2-selection__rendered {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Exibe tooltip para nomes longos */
+.select2-results__option {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.item-truncate {
+    max-width: 250px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    vertical-align: middle;
+}
+
 .logo-sidebar {   
     max-width: 140px;  /* Limita o tamanho máximo */
     height: auto;  /* Mantém a proporção */
