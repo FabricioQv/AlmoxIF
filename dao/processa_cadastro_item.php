@@ -12,6 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $codigo = trim($_POST["codigo"]);
     $quantidade = intval($_POST["quantidade"]);
     $categoria = intval($_POST["categoria"]);
+    $unidade = trim($_POST["unidade"]);
 
     // Definição de valores opcionais
     $estoqueCritico = isset($_POST["estoqueCritico"]) && $_POST["estoqueCritico"] !== "" ? intval($_POST["estoqueCritico"]) : null;
@@ -41,7 +42,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     // Cadastrar o item no banco de dados
-    $sucesso = $itemDAO->cadastrarItem($nome, $codigo, $categoria, $estoqueCritico, $quantidade, $validade, $imagemNome);
+    $sucesso = $itemDAO->cadastrarItem($nome, $codigo, $categoria, $estoqueCritico, $quantidade, $validade, $imagemNome, $unidade );
 
     if ($sucesso) {
         header("Location: ../views/cadastro_item.php?sucesso=1");

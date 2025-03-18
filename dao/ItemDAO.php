@@ -15,19 +15,20 @@ class ItemDAO {
         $stmt->execute();
         return $stmt->fetchColumn() > 0;
     }
-    public function cadastrarItem($nome, $codigo, $categoria, $estoqueCritico, $quantidade, $validade, $imagemNome) {
+    public function cadastrarItem($nome, $codigo, $categoria, $estoqueCritico, $quantidade, $validade, $imagemNome, $unidade) {
         try {
             $this->conn->beginTransaction();
     
             // Inserir o item no banco de dados
-            $sqlItem = "INSERT INTO item (nome, codigo, fk_Categoria_id_categoria, estoqueCritico, imagem) 
-                        VALUES (:nome, :codigo, :categoria, :estoqueCritico, :imagem)";
+            $sqlItem = "INSERT INTO item (nome, codigo, fk_Categoria_id_categoria, estoqueCritico, imagem, unidade) 
+                        VALUES (:nome, :codigo, :categoria, :estoqueCritico, :imagem, :unidade)";
             $stmtItem = $this->conn->prepare($sqlItem);
             $stmtItem->bindValue(":nome", $nome, PDO::PARAM_STR);
             $stmtItem->bindValue(":codigo", $codigo, PDO::PARAM_STR);
             $stmtItem->bindValue(":categoria", $categoria, PDO::PARAM_INT);
             $stmtItem->bindValue(":estoqueCritico", $estoqueCritico ?? null, PDO::PARAM_INT);
             $stmtItem->bindValue(":imagem", $imagemNome ?? null, PDO::PARAM_STR);
+            $stmtItem->bindValue(":unidade", $unidade, PDO::PARAM_STR);
     
             $stmtItem->execute();
             $itemId = $this->conn->lastInsertId();

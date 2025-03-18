@@ -159,6 +159,7 @@ class MovimentoDAO {
                     i.codigo,
                     i.estoqueCritico,
                     i.imagem,
+                    i.unidade,
                     c.nome AS categoria_nome,
                     COALESCE(SUM(CASE WHEN m.tipo = 'entrada' THEN m.quantidade ELSE 0 END), 0) 
                   - COALESCE(SUM(CASE WHEN m.tipo = 'saida' THEN m.quantidade ELSE 0 END), 0) 

@@ -117,7 +117,10 @@ $erroImagem = isset($_GET['erro']) && $_GET['erro'] === "imagem";
                     <label for="quantidade" class="form-label">Quantidade Inicial</label>
                     <input type="number" class="form-control" id="quantidade" name="quantidade" required min="1">
                 </div>
-
+                <div class="mb-3">
+                    <label for="unidade" class="form-label">Unidade</label>
+                    <input type="text" class="form-control" id="unidade" name="unidade" required>
+                </div>
                 <div class="mb-3">
                     <label for="validade" class="form-label">Data de Validade (Opcional)</label>
                     <input type="date" class="form-control" id="validade" name="validade">
