@@ -221,3 +221,12 @@ ALTER TABLE `movimentacao`
 ALTER TABLE `usuario`
   ADD CONSTRAINT `usuario_ibfk_1` FOREIGN KEY (`fk_Role_id_role`) REFERENCES `role` (`id_role`);
 COMMIT;
+
+INSERT INTO `role` (`id_role`, `nome`) VALUES
+(1, 'Administrador'),
+(2, 'Estoquista'),
+(3, 'Professor');
+
+INSERT INTO `usuario` (`id_usuario`, `nome`, `login`, `senha`, `fk_Role_id_role`, `siape`) VALUES
+(7, 'Fab Quevedo', 'adm', '$2y$10$AUpWF3P/7Np13QqanNjcJ.LlCNACWAYlLoUyr/UecUac8e7ZP4HPC', 1, '109109120'),
+(8, 'Henrico Iglesias', 'estoquista', '$2y$10$qy.yCK0sXZK7S/Q5KP16nuEWtQnCwI4iSgkZ0PrniiXTrgc7O3Qba', 2, '12093098');
