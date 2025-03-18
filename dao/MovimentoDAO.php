@@ -11,24 +11,29 @@ class MovimentoDAO {
 
     public function registrarMovimento($movimento) {
         try {
-            $this->conn->beginTransaction(); // Inicia uma transação
+            $this->conn->beginTransaction();
     
             $sql = "INSERT INTO movimentacao (fk_item_id, fk_usuario_id, tipo, quantidade, validade, observacao) 
                     VALUES (:item, :usuario, :tipo, :quantidade, :validade, :observacao)";
+
+
+            
             
             $stmt = $this->conn->prepare($sql);
+
             $stmt->bindParam(":item", $movimento->getItemId());
             $stmt->bindParam(":usuario", $movimento->getUsuarioId());
             $stmt->bindParam(":tipo", $movimento->getTipo());
             $stmt->bindParam(":quantidade", $movimento->getQuantidade());
             $stmt->bindParam(":observacao", $movimento->getObservacao());
             $stmt->bindParam(":validade", $movimento->getValidade());
-    
+            
             if (!$stmt->execute()) {
                 $this->conn->rollBack();
                 return false;
             }
-    
+            
+            
             // Registrar log de movimentação com a observação
             $logSucesso = $this->registrarLog(
                 $movimento->getItemId(),
@@ -38,7 +43,7 @@ class MovimentoDAO {
                 $movimento->getValidade(),
                 $movimento->getObservacao() // Usar a observação original
             );
-    
+            
             if (!$logSucesso) {
                 $this->conn->rollBack();
                 return false;
@@ -132,7 +137,13 @@ class MovimentoDAO {
     public function buscarLoteMaisAntigo($item_id) {
         $sql = "SELECT * FROM movimentacao 
                 WHERE fk_item_id = :item_id AND tipo = 'entrada' 
-                ORDER BY validade ASC, data_movimento ASC 
+                ORDER BY 
+                    CASE 
+                        WHEN validade IS NULL THEN 1 
+                        ELSE 0 
+                    END,
+                    validade ASC, 
+                    data_movimento ASC  
                 LIMIT 1";
         
         $stmt = $this->conn->prepare($sql);

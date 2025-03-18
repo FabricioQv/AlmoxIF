@@ -40,15 +40,26 @@ class ImportacaoDAO {
     public function importarDados($dados) {
         try {
             $this->conn->beginTransaction();
-            
-            // 🔹 Prepara as queries para execução
-            $sqlItem = "INSERT INTO item (codigo, nome, unidade, fk_Categoria_id_categoria) 
-                        VALUES (:codigo, :nome, :unidade, :categoria)";
-            $stmtItem = $this->conn->prepare($sqlItem);
     
-            $sqlMovimentacao = "INSERT INTO movimentacao (fk_item_id, fk_usuario_id, tipo, quantidade) 
-                                VALUES (:item_id, :usuario_id, 'entrada', :quantidade)";
-            $stmtMovimentacao = $this->conn->prepare($sqlMovimentacao);
+            // 🔹 Query para verificar se o código já existe
+            $sqlVerificarItem = "SELECT id_item FROM item WHERE codigo = :codigo";
+            $stmtVerificarItem = $this->conn->prepare($sqlVerificarItem);
+    
+            // 🔹 Query para criar um novo item
+            $sqlInserirItem = "INSERT INTO item (codigo, nome, unidade, fk_Categoria_id_categoria) 
+                               VALUES (:codigo, :nome, :unidade, :categoria)";
+            $stmtInserirItem = $this->conn->prepare($sqlInserirItem);
+    
+            // 🔹 Query para atualizar a quantidade no estoque
+            $sqlAtualizarMovimentacao = "UPDATE movimentacao 
+                                         SET quantidade = quantidade + :quantidade 
+                                         WHERE fk_item_id = :item_id AND tipo = 'entrada'";
+            $stmtAtualizarMovimentacao = $this->conn->prepare($sqlAtualizarMovimentacao);
+    
+            // 🔹 Query para inserir uma movimentação se não houver entrada anterior
+            $sqlInserirMovimentacao = "INSERT INTO movimentacao (fk_item_id, fk_usuario_id, tipo, quantidade) 
+                                       VALUES (:item_id, :usuario_id, 'entrada', :quantidade)";
+            $stmtInserirMovimentacao = $this->conn->prepare($sqlInserirMovimentacao);
     
             $usuarioId = $_SESSION["usuario"]["id_usuario"] ?? 1; // Se não houver sessão, usa um ID padrão
     
@@ -56,31 +67,34 @@ class ImportacaoDAO {
                 // 🔹 Verifica ou cria a categoria
                 $categoriaId = $this->obterOuCriarCategoria($item["categoria"]);
     
-                // 🔹 Verifica se o item já existe pelo nome
-                $itemId = $this->existeItem($item["nome"]);
+                // 🔹 Verifica se o item já existe pelo código
+                $stmtVerificarItem->bindParam(":codigo", $item["codigo"]);
+                $stmtVerificarItem->execute();
+                $itemId = $stmtVerificarItem->fetchColumn(); // Obtém o ID do item se já existir
     
                 if (!$itemId) { // Se o item não existir, cria um novo
-                    $stmtItem->bindParam(":codigo", $item["codigo"]);
-                    $stmtItem->bindParam(":nome", $item["nome"]);
-                    $stmtItem->bindParam(":unidade", $item["unidade"]);
-                    $stmtItem->bindParam(":categoria", $categoriaId);
+                    $stmtInserirItem->bindParam(":codigo", $item["codigo"]);
+                    $stmtInserirItem->bindParam(":nome", $item["nome"]);
+                    $stmtInserirItem->bindParam(":unidade", $item["unidade"]);
+                    $stmtInserirItem->bindParam(":categoria", $categoriaId);
     
-                    if ($stmtItem->execute()) {
+                    if ($stmtInserirItem->execute()) {
                         $itemId = $this->conn->lastInsertId();
                     }
-                } 
-    
-                // 🔹 Insere a movimentação do estoque
-                if (!isset($item["estoque_atual"]) || empty($item["estoque_atual"])) {
-                    echo "⚠️ Quantidade inválida para Item ID $itemId. Pulando movimentação. <br>";
-                    continue;
                 }
-
-                $quantidade = intval($item["estoque_atual"]);
-
-                $stmtMovimentacao->bindParam(":item_id", $itemId);
-                $stmtMovimentacao->bindParam(":usuario_id", $usuarioId);
-                $stmtMovimentacao->bindParam(":quantidade", $quantidade);
+    
+                // 🔹 Atualiza o estoque se já existir o item
+                $stmtAtualizarMovimentacao->bindParam(":item_id", $itemId);
+                $stmtAtualizarMovimentacao->bindParam(":quantidade", $item["estoque_atual"]);
+                $stmtAtualizarMovimentacao->execute();
+    
+                // 🔹 Se não há movimentação anterior para o item, insere uma nova entrada
+                if ($stmtAtualizarMovimentacao->rowCount() == 0) {
+                    $stmtInserirMovimentacao->bindParam(":item_id", $itemId);
+                    $stmtInserirMovimentacao->bindParam(":usuario_id", $usuarioId);
+                    $stmtInserirMovimentacao->bindParam(":quantidade", $item["estoque_atual"]);
+                    $stmtInserirMovimentacao->execute();
+                }
             }
     
             $this->conn->commit();
@@ -90,5 +104,6 @@ class ImportacaoDAO {
             die("Erro ao importar dados: " . $e->getMessage());
         }
     }
+    
 }
 ?>
