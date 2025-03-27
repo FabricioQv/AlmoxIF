@@ -23,5 +23,12 @@ class CategoriaDAO {
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+    
+    public function criarCategoria($nome) {
+        $sql = "INSERT INTO Categoria (nome) VALUES (:nome)";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":nome", $nome);
+        return $stmt->execute();
+    }
 }
 ?>

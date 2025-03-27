@@ -134,6 +134,14 @@ class MovimentoDAO {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function buscarItemPorCodigo($codigo) {
+        $sql = "SELECT * FROM item WHERE codigo = :codigo";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":codigo", $codigo);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
     public function buscarLoteMaisAntigo($item_id) {
         $sql = "SELECT * FROM movimentacao 
                 WHERE fk_item_id = :item_id AND tipo = 'entrada' 

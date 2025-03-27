@@ -47,6 +47,14 @@ body {
     color: var(--light-color);
 }
 
+.categoria-card {
+    width: 100%; /* Garante que o card ocupe toda a largura disponível */
+    max-width: 900px; /* Evita que fique muito largo */
+    padding: 20px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Suaviza a borda */
+    border-radius: 10px;
+}
+
 /* Navbar */
 .navbar {
     position: fixed;
