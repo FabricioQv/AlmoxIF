@@ -20,23 +20,32 @@ if (isset($_SESSION["usuario"])) {
     <link rel="stylesheet" href="../public/styles.css">
 </head>
 <body class="d-flex justify-content-center align-items-center vh-100 bg-light">
-    <div class="card p-4 shadow-lg" style="width: 400px;">
-        <h3 class="text-center mb-4"><i class="bi bi-box-seam"></i> Estoque IFSul</h3>
+
+    <div class="card p-5 rounded-4 shadow-lg" style="max-width: 420px; width: 100%;">
+        <div class="text-center mb-4">
+            <i class="bi bi-box-seam fs-1 text-success"></i>
+            <h3 class="fw-bold mt-2">AlmoxIF</h3>
+            <p class="text-muted mb-0">Acesso ao sistema</p>
+        </div>
 
         <?php if (isset($_GET["erro"])): ?>
-            <div class="alert alert-danger text-center">❌ Login ou senha inválidos.</div>
+            <div class="alert alert-danger text-center p-2 mb-3">
+                ❌ Login ou senha inválidos.
+            </div>
         <?php endif; ?>
 
         <form action="../dao/processa_login.php" method="POST">
             <div class="mb-3">
-                <label for="login" class="form-label">Login</label>
-                <input type="text" class="form-control" id="login" name="login" required>
+                <label for="login" class="form-label fw-semibold">Login</label>
+                <input type="text" class="form-control" id="login" name="login" placeholder="Digite seu login" required>
             </div>
             <div class="mb-3">
-                <label for="senha" class="form-label">Senha</label>
-                <input type="password" class="form-control" id="senha" name="senha" required>
+                <label for="senha" class="form-label fw-semibold">Senha</label>
+                <input type="password" class="form-control" id="senha" name="senha" placeholder="Digite sua senha" required>
             </div>
-            <button type="submit" class="btn btn-primary-custom w-100">Entrar</button>
+            <button type="submit" class="btn btn-success w-100 fw-bold">
+                <i class="bi bi-box-arrow-in-right me-1"></i> Entrar
+            </button>
         </form>
     </div>
 
