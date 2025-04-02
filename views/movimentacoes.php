@@ -46,7 +46,7 @@ $movimentacoes = $movimentoDAO->listarMovimentacoes();
                         <th>Item</th>
                         <th>Tipo</th>
                         <th>Quantidade</th>
-                        <th>Validade Mais Próxima</th>
+                        <th>Validade</th>
                         <th>Data da Movimentação</th>
                         <th>Usuário</th>
                         <th>Observação</th>

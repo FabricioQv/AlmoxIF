@@ -79,31 +79,48 @@ class MovimentoDAO {
     
     
 
-    public function obterMovimentacaoMensal() {
+    public function obterMovimentacaoMensal($itemId = null) {
         $sql = "SELECT 
                     DATE_FORMAT(data_movimento, '%Y-%m') AS mes, 
                     SUM(CASE WHEN tipo = 'entrada' THEN quantidade ELSE 0 END) AS total_entrada,
                     SUM(CASE WHEN tipo = 'saida' THEN quantidade ELSE 0 END) AS total_saida
-                FROM movimentacao
-                GROUP BY mes
-                ORDER BY mes ASC";
+                FROM movimentacao";
         
+        if ($itemId) {
+            $sql .= " WHERE fk_item_id = :item_id";
+        }
+    
+        $sql .= " GROUP BY mes ORDER BY mes ASC";
+    
         $stmt = $this->conn->prepare($sql);
+    
+        if ($itemId) {
+            $stmt->bindParam(":item_id", $itemId, PDO::PARAM_INT);
+        }
+    
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
     
-    public function obterItensMaisMovimentados() {
+    public function obterItensMaisMovimentados($itemId = null) {
         $sql = "SELECT 
                     i.nome AS item_nome, 
                     SUM(m.quantidade) AS total_movimentado
                 FROM movimentacao m
-                INNER JOIN item i ON m.fk_item_id = i.id_item
-                GROUP BY i.nome
-                ORDER BY total_movimentado DESC
-                LIMIT 5";
-        
+                INNER JOIN item i ON m.fk_item_id = i.id_item";
+    
+        if ($itemId) {
+            $sql .= " WHERE i.id_item = :item_id";
+        }
+    
+        $sql .= " GROUP BY i.nome ORDER BY total_movimentado DESC LIMIT 5";
+    
         $stmt = $this->conn->prepare($sql);
+    
+        if ($itemId) {
+            $stmt->bindParam(":item_id", $itemId, PDO::PARAM_INT);
+        }
+    
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }

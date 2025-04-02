@@ -1,10 +1,10 @@
 :root {
-    --primary-color: #228B22; /* Verde principal do IFSul */
-    --secondary-color: #32CD32; /* Verde mais claro para contrastes */
-    --light-color: #ffffff; /* Branco */
-    --dark-color: #333333; /* Cinza escuro para textos */
-    --hover-color: #2E8B57; /* Verde médio para efeitos de hover */
-    --border-color: #ddd; /* Cor de borda sutil */
+    --primary-color: #228B22;
+    --secondary-color: #32CD32;
+    --light-color: #ffffff;
+    --dark-color: #333333;
+    --hover-color: #2E8B57;
+    --border-color: #ddd;
 }
 
 body {
@@ -12,33 +12,74 @@ body {
     font-family: 'Inter', sans-serif;
     color: var(--dark-color);
     display: flex;
+    transition: background-color 0.3s, color 0.3s;
 }
 
-/* Sidebar fixa na esquerda */
 .sidebar {
     background: var(--primary-color);
     min-height: 100vh;
     padding: 20px;
-    color: white;
+    color: var(--light-color);
     width: 250px;
     position: fixed;
     top: 0;
     left: 0;
     bottom: 0;
+    transition: background-color 0.3s;
+}
+
+.sidebar img,
+.sidebar h4,
+.sidebar .nav-link,
+.sidebar .nav-link i {
+    color: var(--light-color);
+    transition: color 0.3s;
+}
+
+.dashboard-filter-form {
+    max-width: 600px;
+    width: 100%;
+}
+
+.dashboard-filter-form select {
+    max-width: 300px;
+    min-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.nav-link.nav-anim {
+    display: flex;
+    align-items: center;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.nav-link.nav-anim:hover {
+    background-color: var(--hover-color);
+    color: var(--light-color);
+    transform: translateX(3px);
+}
+
+.nav-link.nav-anim i.icon-anim {
+    transition: transform 0.3s ease-in-out;
+}
+
+.nav-link.nav-anim:hover i.icon-anim {
+    transform: rotate(-5deg) scale(1.1);
 }
 
 .sidebar h3 {
     color: var(--light-color);
     font-weight: bold;
-    margin-top: 10px
+    margin-top: 10px;
 }
 
 .sidebar .nav-link {
-    color: white;
-    font-size: 1rem;
-    padding: 10px 15px;
-    border-radius: 5px;
-    margin-bottom: 5px;
+    transition: all 0.2s ease-in-out;
+    border-radius: 0.5rem;
+    padding: 8px 12px;
+    color: var(--light-color);
 }
 
 .sidebar .nav-link:hover,
@@ -47,30 +88,36 @@ body {
     color: var(--light-color);
 }
 
-.categoria-card {
-    width: 100%; /* Garante que o card ocupe toda a largura disponível */
-    max-width: 900px; /* Evita que fique muito largo */
-    padding: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); /* Suaviza a borda */
-    border-radius: 10px;
+.sidebar .nav-link:hover {
+    background-color: rgba(255,255,255,0.1);
+    color: #a0e3a0;
 }
 
-/* Navbar */
+.sidebar .nav-link i,
+.sidebar .nav-link .bi-chevron-down,
+.sidebar .nav-link .bi-chevron-up {
+    color: var(--light-color);
+}
+
 .navbar {
     position: fixed;
     top: 0;
     left: 250px;
     width: calc(100% - 250px);
     z-index: 1000;
-    background: white;
+    background: var(--light-color);
     padding: 15px 20px;
     border-bottom: 2px solid var(--border-color);
     display: flex;
     justify-content: space-between;
     align-items: center;
+    transition: background-color 0.3s;
 }
 
-/* Ajusta o conteúdo principal */
+.navbar .nav-link {
+    color: var(--dark-color);
+}
+
 .main-content {
     margin-left: 250px;
     margin-top: 80px;
@@ -81,14 +128,12 @@ body {
     width: calc(100% - 250px);
 }
 
-/* Ajusta a disposição dos cards */
 .row {
     width: 100%;
     display: flex;
     justify-content: center;
 }
 
-/* Cards de estatísticas */
 .stat-card {
     background: var(--light-color);
     border: none;
@@ -98,35 +143,29 @@ body {
     text-align: center;
     width: 100%;
     transition: 0.3s;
+    color: var(--dark-color);
 }
 
 .stat-card:hover {
     transform: scale(1.05);
 }
 
-/* Estilização da Tabela */
 .table-custom {
     width: 100%;
     max-width: 1200px;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    background: white;
+    background: var(--light-color);
     border: 1px solid var(--border-color);
     padding: 15px;
 }
 
-/* Cabeçalho da tabela */
 .dataTable thead {
     background: var(--primary-color) !important;
-    color: white !important;
-    text-align: center;
-    font-weight: bold;
-    font-size: 18px;
-    text-transform: uppercase;
+    color: var(--light-color) !important;
 }
 
-/* Estilização das células */
 .dataTable th, 
 .dataTable td {
     text-align: center;
@@ -137,45 +176,32 @@ body {
     font-size: 16px;
     white-space: normal !important;
     word-wrap: break-word;
+    color: var(--dark-color);
+    background-color: var(--light-color);
+}
+
+.dataTable tbody tr:nth-child(even) {
+    background-color: rgba(50, 205, 50, 0.07);
+}
+
+.dataTable tbody tr:hover {
+    background-color: rgba(50, 205, 50, 0.12);
+    transition: 0.3s;
 }
 
 td.dt-nowrap {
     white-space: normal !important;
     word-wrap: break-word;
-    max-width: 250px; /* Ajuste conforme necessário */
+    max-width: 250px;
 }
 
-
-.table td, .table th {
-    white-space: normal !important;
-    word-wrap: break-word;
-}
-
-/* Ajuste para Linhas Alternadas */
-.dataTable tbody tr:nth-child(even) {
-    background-color: rgba(50, 205, 50, 0.1);
-}
-
-/* Ajuste para que o select fique responsivo e legível */
 .item-select {
     font-size: 14px;
-    white-space: nowrap; /* Evita quebras de linha dentro do select */
+    white-space: nowrap;
     overflow: hidden;
-    text-overflow: ellipsis; /* Adiciona reticências caso ultrapasse o espaço */
+    text-overflow: ellipsis;
 }
 
-/* Torna a lista de itens mais compacta */
-.item-select option {
-    font-size: 13px;
-    padding: 5px;
-}
-
-/* Permite tooltip ao passar o mouse */
-.item-select option[title]:hover {
-    cursor: pointer;
-}
-
-/* Deixa os itens do select mais ajustados */
 .select2-container--default .select2-selection--single {
     height: 38px;
     padding: 5px;
@@ -183,42 +209,36 @@ td.dt-nowrap {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    background: var(--light-color);
+    color: var(--dark-color);
 }
 
-/* Garante que os itens da dropdown tenham largura correta */
 .select2-dropdown {
     font-size: 14px;
+    background: var(--light-color);
+    color: var(--dark-color);
 }
 
-/* Melhora a experiência visual */
 .select2-container .select2-selection--single .select2-selection__rendered {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+    color: var(--dark-color);
 }
 
-/* Exibe tooltip para nomes longos */
 .select2-results__option {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-}
-
-.item-truncate {
-    max-width: 250px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    display: inline-block;
-    vertical-align: middle;
+    color: var(--dark-color);
 }
 
 .logo-sidebar {   
-    max-width: 140px;  /* Limita o tamanho máximo */
-    height: auto;  /* Mantém a proporção */
+    max-width: 140px;
+    height: auto;
     display: block;
-    margin: 10px auto; /* Centraliza e adiciona espaçamento */
-    border-radius: 5px; /* (Opcional) Arredonda cantos se necessário */
+    margin: 10px auto;
+    border-radius: 5px;
 }
 
 .sub-menu {
@@ -226,33 +246,24 @@ td.dt-nowrap {
     padding-left: 20px;
 }
 
-/* Estilo quando o submenu está aberto */
 .sub-menu.show {
     display: block;
 }
 
-/* Ajuste para os itens principais */
 .toggle-menu {
     cursor: pointer;
     font-weight: bold;
 }
 
-/* Efeito Hover nas Linhas */
-.dataTable tbody tr:hover {
-    background-color: rgba(50, 205, 50, 0.2);
-    transition: 0.3s;
-}
-
-/* Estilização do Campo de Pesquisa */
 .dataTables_wrapper .dataTables_filter input {
     border-radius: 8px;
     border: 1px solid var(--primary-color);
     padding: 10px;
     background: var(--light-color);
     font-size: 14px;
+    color: var(--dark-color);
 }
 
-/* Botões de Paginação */
 .dataTables_wrapper .dataTables_paginate .paginate_button {
     border-radius: 25px;
     border: 1px solid var(--primary-color);
@@ -269,7 +280,6 @@ td.dt-nowrap {
     color: white;
 }
 
-/* Ajuste do botão 'Mostrar' */
 .dataTables_length select {
     border-radius: 8px;
     border: 1px solid var(--primary-color);
@@ -278,13 +288,11 @@ td.dt-nowrap {
     color: var(--dark-color);
 }
 
-/* Melhor alinhamento para os elementos no estoque */
 .w-100 {
     width: 100%;
     max-width: 1200px;
 }
 
-/* Ajusta a imagem do item na tabela */
 .item-img {
     width: 60px;
     height: 60px;
@@ -293,17 +301,15 @@ td.dt-nowrap {
     border: 2px solid var(--border-color);
     display: block;
     margin: auto;
-    background: white;
+    background: var(--light-color);
 }
 
-/* Melhorando Células Vazias */
 .dataTable tbody td:empty::after {
     content: "—";
     color: #999;
     font-style: italic;
 }
 
-/* Responsividade */
 @media (max-width: 768px) {
     .sidebar {
         width: 100%;
@@ -324,4 +330,63 @@ td.dt-nowrap {
         width: 100%;
         max-width: 100%;
     }
+}
+
+.relatorios-container .card {
+    border: none;
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(0, 0, 0, 0.07);
+    padding: 25px 30px;
+    transition: 0.3s ease;
+    background: #fdfdfd;
+}
+
+.relatorios-container .card-title {
+    font-size: 1.4rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--primary-color);
+}
+
+.relatorios-container .card-title i {
+    font-size: 1.6rem;
+}
+
+.relatorios-container .text-muted {
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+}
+
+.relatorios-container .btn {
+    padding: 10px 25px;
+    font-weight: 600;
+}
+
+.relatorios-container .btn-success {
+    background-color: var(--primary-color);
+    border: none;
+}
+
+.relatorios-container .btn-success:hover {
+    background-color: var(--hover-color);
+}
+
+.relatorios-container .form-label {
+    font-weight: 600;
+}
+
+.relatorios-container .card + .card {
+    margin-top: 30px;
+}
+
+.card input[type="file"]::file-selector-button {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 6px;
+    margin-right: 10px;
+    cursor: pointer;
 }

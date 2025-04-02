@@ -59,8 +59,43 @@ class ItemDAO {
         }
     }
     
+    public function buscarPorId($id_item) {
+        $sql = "SELECT 
+                    i.id_item,
+                    i.nome,
+                    COALESCE(SUM(CASE WHEN m.tipo = 'entrada' THEN m.quantidade ELSE 0 END), 0)
+                  - COALESCE(SUM(CASE WHEN m.tipo = 'saida' THEN m.quantidade ELSE 0 END), 0) AS estoque_atual
+                FROM item i
+                LEFT JOIN movimentacao m ON i.id_item = m.fk_item_id
+                WHERE i.id_item = :id
+                GROUP BY i.id_item";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":id", $id_item);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
     
     
+    public function listarItensComEstoque() {
+        $sql = "
+            SELECT 
+                i.id_item AS codigo,
+                i.nome AS nome,
+                COALESCE(SUM(CASE 
+                    WHEN m.tipo = 'entrada' THEN m.quantidade 
+                    WHEN m.tipo = 'saida' THEN -m.quantidade 
+                    ELSE 0 END), 0) AS estoque
+            FROM item i
+            LEFT JOIN movimentacao m ON i.id_item = m.fk_item_id
+            GROUP BY i.id_item, i.nome
+            ORDER BY i.nome;
+        ";
+    
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     
     
     

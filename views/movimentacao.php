@@ -22,116 +22,129 @@ $erro = isset($_GET['erro']);
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Movimentação de Estoque - Estoque IFSul</title>
-    
+
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" rel="stylesheet" />
-    
     <link rel="stylesheet" href="../public/styles.css">
 </head>
 <body>
 
-    <?php include "sidebar.php"; ?> 
-    <?php include "navbar.php"; ?>
+<?php include "sidebar.php"; ?> 
+<?php include "navbar.php"; ?>
 
-    <!-- Toast de Sucesso/Erro -->
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <?php if ($sucesso): ?>
-            <div class="toast align-items-center text-bg-success border-0 show" role="alert">
-                <div class="d-flex">
-                    <div class="toast-body">✅ Movimentação registrada com sucesso!</div>
-                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+<!-- Toast de Sucesso/Erro -->
+<div class="toast-container position-fixed top-0 end-0 p-3">
+    <?php if ($sucesso): ?>
+        <div class="toast align-items-center text-bg-success border-0 show" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">✅ Movimentação registrada com sucesso!</div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    <?php endif; ?>
+
+    <?php if ($erro): ?>
+        <div class="toast align-items-center text-bg-danger border-0 show" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">❌ Erro ao registrar movimentação!</div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    <?php endif; ?>
+    <?php if (isset($_GET['erro']) && $_GET['erro'] === "estoqueinsuficiente"): ?>
+        <div class="toast align-items-center text-bg-warning border-0 show" role="alert">
+            <div class="d-flex">
+                <div class="toast-body">
+                    ⚠️ A quantidade informada é maior do que o estoque disponível.
                 </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
             </div>
-        <?php endif; ?>
+        </div> 
+<?php endif; ?>
+</div>
 
-        <?php if ($erro): ?>
-            <div class="toast align-items-center text-bg-danger border-0 show" role="alert">
-                <div class="d-flex">
-                    <div class="toast-body">❌ Erro ao registrar movimentação!</div>
-                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+<!-- Conteúdo Principal -->
+<div class="main-content">
+    <div class="profile-card">
+        <div class="card p-4 shadow-lg rounded-4" style="width: 500px;">
+            <div class="card-header bg-light rounded-3 mb-4 d-flex align-items-center">
+                <i class="bi bi-arrow-left-right fs-4 text-success me-2"></i>
+                <h4 class="mb-0 text-success">Registrar Movimentação</h4>
+            </div>
+
+            <form action="../dao/processa_movimentacao.php" method="POST">
+                <div class="mb-4">
+                    <label for="item" class="form-label fw-semibold">Selecione o Item</label>
+                    <select class="form-control item-select w-100" id="item" name="item" required>
+                        <option value="">Escolha um item</option>
+                        <?php foreach ($itens as $item): ?>
+                            <option value="<?= $item['id_item']; ?>" 
+                                    title="<?= htmlspecialchars($item['nome']) . " - Estoque: " . $item['estoque_atual']; ?>">
+                                <?= mb_strimwidth(htmlspecialchars($item['nome']), 0, 40, "...") ?> - (Estoque: <?= $item['estoque_atual']; ?>)
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
                 </div>
-            </div>
-        <?php endif; ?>
-    </div>
 
-    <!-- Conteúdo Principal -->
-    <div class="main-content">
-        <div class="profile-card">
-            <h2><i class="bi bi-arrow-left-right"></i> Registrar Movimentação</h2>
+                <div class="mb-4">
+                    <label for="tipo" class="form-label fw-semibold">Tipo de Movimentação</label>
+                    <select class="form-control" id="tipo" name="tipo" required onchange="toggleValidade()">
+                        <option value="entrada">Entrada</option>
+                        <option value="saida">Saída</option>
+                    </select>
+                </div>
 
-            <!-- Formulário de Movimentação -->
-            <div class="card p-4">
-                <form action="../dao/processa_movimentacao.php" method="POST">
-                    <div class="mb-3">
-                        <label for="item" class="form-label">Selecione o Item</label>
-                        <select class="form-control item-select" id="item" name="item" required>
-                            <option value="">Escolha um item</option>
-                            <?php foreach ($itens as $item): ?>
-                                <option value="<?= $item['id_item']; ?>" 
-                                        title="<?= htmlspecialchars($item['nome']) . " - Estoque: " . $item['estoque_atual']; ?>">
-                                    <?= htmlspecialchars($item['nome']); ?> - (Estoque: <?= $item['estoque_atual']; ?>)
-                                </option>
-                            <?php endforeach; ?>
-                        </select>
-                    </div>
+                <div class="mb-4">
+                    <label for="quantidade" class="form-label fw-semibold">Quantidade</label>
+                    <input type="number" class="form-control" id="quantidade" name="quantidade" required min="1">
+                </div>
 
-                    <div class="mb-3">
-                        <label for="tipo" class="form-label">Tipo de Movimentação</label>
-                        <select class="form-control" id="tipo" name="tipo" required onchange="toggleValidade()">
-                            <option value="entrada">Entrada</option>
-                            <option value="saida">Saída</option>
-                        </select>
-                    </div>
+                <div class="mb-4" id="validadeContainer">
+                    <label for="validade" class="form-label fw-semibold">Data de Validade (Opcional)</label>
+                    <input type="date" class="form-control" id="validade" name="validade">
+                </div>
 
-                    <div class="mb-3">
-                        <label for="quantidade" class="form-label">Quantidade</label>
-                        <input type="number" class="form-control" id="quantidade" name="quantidade" required min="1">
-                    </div>
+                <div class="mb-4">
+                    <label for="observacao" class="form-label fw-semibold">Observação (Opcional)</label>
+                    <textarea class="form-control" id="observacao" name="observacao" rows="3"></textarea>
+                </div>
 
-                    <div class="mb-3" id="validadeContainer">
-                        <label for="validade" class="form-label">Data de Validade (Opcional)</label>
-                        <input type="date" class="form-control" id="validade" name="validade">
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="observacao" class="form-label">Observação (Opcional)</label>
-                        <textarea class="form-control" id="observacao" name="observacao" rows="3"></textarea>
-                    </div>
-
-                    <button type="submit" class="btn btn-primary w-100"><i class="bi bi-save"></i> Registrar Movimentação</button>
-                </form>
-            </div>
+                <button type="submit" class="btn btn-success w-100 py-2 fw-bold">
+                    <i class="bi bi-save"></i> Registrar Movimentação
+                </button>
+            </form>
 
             <div class="btn-group-custom mt-3">
-                <a href="estoque.php" class="btn btn-secondary w-100"><i class="bi bi-arrow-left"></i> Voltar</a>
+                <a href="estoque.php" class="btn btn-outline-success w-100"><i class="bi bi-arrow-left"></i> Voltar</a>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
-    <script>
-        function toggleValidade() {
-            let tipo = document.getElementById("tipo").value;
-            let validadeContainer = document.getElementById("validadeContainer");
-            validadeContainer.style.display = tipo === "entrada" ? "block" : "none";
-        }
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.min.js"></script>
+<script>
+    function toggleValidade() {
+        let tipo = document.getElementById("tipo").value;
+        let validadeContainer = document.getElementById("validadeContainer");
+        validadeContainer.style.display = tipo === "entrada" ? "block" : "none";
+    }
 
-        document.addEventListener("DOMContentLoaded", function () {
-            toggleValidade();
-        });
+    document.addEventListener("DOMContentLoaded", function () {
+        toggleValidade();
+    });
 
-        $(document).ready(function () {
+    $(document).ready(function () {
         $('#item').select2({
             placeholder: "Escolha um item",
             allowClear: true,
             width: '100%'
         });
     });
-    </script>
+</script>
 </body>
 </html>

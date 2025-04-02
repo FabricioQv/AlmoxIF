@@ -34,78 +34,82 @@ $duplicado = isset($_GET['duplicado']);
 
     <!-- Conteúdo Principal -->
     <div class="main-content">
-        <h4 class="fw-bold mb-4">Cadastro de Novo Usuário</h4>
-
-        <!-- Toasts -->
-        <div class="toast-container position-fixed top-0 end-0 p-3">
-            <?php if ($sucesso): ?>
-                <div id="sucessoToast" class="toast align-items-center text-bg-success border-0 show" role="alert">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            ✅ Usuário cadastrado com sucesso!
-                        </div>
-                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
-                    </div>
-                </div>
-            <?php endif; ?>
-
-            <?php if ($erro): ?>
-                <div id="erroToast" class="toast align-items-center text-bg-danger border-0 show" role="alert">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            ❌ Erro ao cadastrar o usuário. Tente novamente.
-                        </div>
-                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
-                    </div>
-                </div>
-            <?php endif; ?>
-
-            <?php if ($duplicado): ?>
-                <div id="duplicadoToast" class="toast align-items-center text-bg-warning border-0 show" role="alert">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            ⚠️ Este login já está em uso. Escolha outro.
-                        </div>
-                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
-                    </div>
-                </div>
-            <?php endif; ?>
-        </div>
-
-        <!-- Formulário de Cadastro -->
-        <div class="card p-4">
-            <form action="../dao/processa_cadastro.php" method="POST">
-                <div class="mb-3">
-                    <label for="nome" class="form-label">Nome Completo</label>
-                    <input type="text" class="form-control" id="nome" name="nome" required>
-                </div>
-                <div class="mb-3">
-                    <label for="siape" class="form-label">SIAPE (Opcional)</label>
-                    <input type="text" class="form-control" id="siape" name="siape">
-                </div>
-                <div class="mb-3">
-                    <label for="login" class="form-label">Login</label>
-                    <input type="text" class="form-control" id="login" name="login" required>
-                </div>
-                <div class="mb-3">
-                    <label for="senha" class="form-label">Senha</label>
-                    <input type="password" class="form-control" id="senha" name="senha" required>
-                </div>
-                <div class="mb-3">
-                    <label for="role" class="form-label">Função</label>
-                    <select class="form-control" id="role" name="role" required>
-                        <option value="">Selecione uma função</option>
-                        <?php foreach ($roles as $role): ?>
-                            <option value="<?= htmlspecialchars($role['id_role']) ?>">
-                                <?= htmlspecialchars($role['nome']) ?>
-                            </option>
-                        <?php endforeach; ?>
-                    </select>
-                </div>
-                <button type="submit" class="btn btn-primary-custom"><i class="bi bi-check-lg"></i> Cadastrar</button>
-            </form>
-        </div>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="fw-bold text-success"><i class="bi bi-person-plus-fill"></i> Cadastro de Novo Usuário</h2>
     </div>
+
+    <!-- Toasts -->
+    <div class="toast-container position-fixed top-0 end-0 p-3">
+        <?php if ($sucesso): ?>
+            <div class="toast align-items-center text-bg-success border-0 show" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ✅ Usuário cadastrado com sucesso!
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($erro): ?>
+            <div class="toast align-items-center text-bg-danger border-0 show" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ❌ Erro ao cadastrar o usuário. Tente novamente.
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        <?php endif; ?>
+
+        <?php if ($duplicado): ?>
+            <div class="toast align-items-center text-bg-warning border-0 show" role="alert">
+                <div class="d-flex">
+                    <div class="toast-body">
+                        ⚠️ Este login já está em uso. Escolha outro.
+                    </div>
+                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            </div>
+        <?php endif; ?>
+    </div>
+
+    <!-- Formulário de Cadastro com Estilo -->
+    <div class="card shadow-lg p-4 rounded-4" style="max-width: 600px; margin: auto;">
+        <form action="../dao/processa_cadastro.php" method="POST">
+            <div class="mb-3">
+                <label for="nome" class="form-label fw-semibold">Nome Completo</label>
+                <input type="text" class="form-control form-control-lg" id="nome" name="nome" required>
+            </div>
+            <div class="mb-3">
+                <label for="siape" class="form-label fw-semibold">SIAPE <span class="text-muted">(Opcional)</span></label>
+                <input type="text" class="form-control" id="siape" name="siape">
+            </div>
+            <div class="mb-3">
+                <label for="login" class="form-label fw-semibold">Login</label>
+                <input type="text" class="form-control" id="login" name="login" required>
+            </div>
+            <div class="mb-3">
+                <label for="senha" class="form-label fw-semibold">Senha</label>
+                <input type="password" class="form-control" id="senha" name="senha" required>
+            </div>
+            <div class="mb-4">
+                <label for="role" class="form-label fw-semibold">Função</label>
+                <select class="form-select" id="role" name="role" required>
+                    <option value="">Selecione uma função</option>
+                    <?php foreach ($roles as $role): ?>
+                        <option value="<?= htmlspecialchars($role['id_role']) ?>">
+                            <?= htmlspecialchars($role['nome']) ?>
+                        </option>
+                    <?php endforeach; ?>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success w-100 fw-bold">
+                <i class="bi bi-check-circle"></i> Cadastrar Usuário
+            </button>
+        </form>
+    </div>
+</div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

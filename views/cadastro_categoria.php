@@ -32,69 +32,66 @@ $erro = isset($_GET['erro']);
 
     <!-- Conteúdo Principal -->
     <div class="main-content">
-        <h4 class="fw-bold mb-4">Cadastro de Categoria</h4>
+        <div class="container d-flex flex-column align-items-center">
+            <h3 class="fw-bold mb-4 text-success"><i class="bi bi-tags"></i> Gerenciar Categorias</h3>
 
-        <!-- Toasts -->
-        <div class="toast-container position-fixed top-0 end-0 p-3">
-            <?php if ($sucesso): ?>
-                <div id="sucessoToast" class="toast align-items-center text-bg-success border-0 show" role="alert">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            ✅ Categoria cadastrada com sucesso!
+            <!-- Toasts -->
+            <div class="toast-container position-fixed top-0 end-0 p-3">
+                <?php if ($sucesso): ?>
+                    <div class="toast align-items-center text-bg-success border-0 show" role="alert">
+                        <div class="d-flex">
+                            <div class="toast-body">✅ Categoria cadastrada com sucesso!</div>
+                            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
                         </div>
-                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
                     </div>
-                </div>
-            <?php endif; ?>
+                <?php endif; ?>
 
-            <?php if ($erro): ?>
-                <div id="erroToast" class="toast align-items-center text-bg-danger border-0 show" role="alert">
-                    <div class="d-flex">
-                        <div class="toast-body">
-                            ❌ Erro ao cadastrar a categoria. Tente novamente.
+                <?php if ($erro): ?>
+                    <div class="toast align-items-center text-bg-danger border-0 show" role="alert">
+                        <div class="d-flex">
+                            <div class="toast-body">❌ Erro ao cadastrar a categoria. Tente novamente.</div>
+                            <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
                         </div>
-                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
                     </div>
-                </div>
-            <?php endif; ?>
-        </div>
-
-        <!-- Formulário de Cadastro -->
-        <div class="card p-4">
-            <form action="../dao/processa_categoria.php" method="POST">
-                <div class="mb-3">
-                    <label for="nome" class="form-label">Nome da Categoria</label>
-                    <input type="text" class="form-control" id="nome" name="nome" required>
-                </div>
-                <button type="submit" class="btn btn-primary-custom"><i class="bi bi-check-lg"></i> Cadastrar</button>
-            </form>
-        </div>
-
-        <!-- Lista de Categorias -->
-        <div class="mt-5">
-            <h3 class="text-center text-secondary"><i class="bi bi-list-ul"></i> Categorias Cadastradas</h3>
-            <div class="table-responsive">
-                <table class="table table-striped table-hover mt-3 text-center">
-                    <thead class="table-dark">
-                        <tr>
-                            <th>ID</th>
-                            <th>Nome</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($categorias as $categoria): ?>
-                            <tr>
-                                <td class="fw-bold">#<?= htmlspecialchars($categoria['id_categoria']); ?></td>
-                                <td><?= htmlspecialchars($categoria['nome']); ?></td>
-                            </tr>
-                        <?php endforeach; ?>
-                    </tbody>
-                </table>
+                <?php endif; ?>
             </div>
-        </div>
 
-        <div class="text-center mt-4">
-            <a href="dashboard.php" class="btn btn-secondary"><i class="bi bi-arrow-left"></i> Voltar ao Dashboard</a>
+            <!-- Card com Formulário -->
+            <div class="card shadow p-4 mb-5" style="width: 100%; max-width: 600px;">
+                <h5 class="text-success fw-bold mb-3"><i class="bi bi-plus-circle"></i> Cadastrar Nova Categoria</h5>
+                <form action="../dao/processa_categoria.php" method="POST">
+                    <div class="mb-3">
+                        <label for="nome" class="form-label">Nome da Categoria</label>
+                        <input type="text" class="form-control" id="nome" name="nome" placeholder="Digite o nome" required>
+                    </div>
+                    <button type="submit" class="btn btn-success w-100 fw-bold"><i class="bi bi-check-lg"></i> Cadastrar</button>
+                </form>
+            </div>
+
+            <!-- Lista de Categorias -->
+            <div class="card shadow p-4 w-100" style="max-width: 900px;">
+                <h5 class="text-secondary fw-bold mb-3"><i class="bi bi-list-ul"></i> Categorias Cadastradas</h5>
+                <div class="table-responsive">
+                    <table class="table table-striped table-hover text-center">
+                        <thead class="table-success">
+                            <tr>
+                                <th>ID</th>
+                                <th>Nome</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($categorias as $categoria): ?>
+                                <tr>
+                                    <td class="fw-bold">#<?= htmlspecialchars($categoria['id_categoria']); ?></td>
+                                    <td><?= htmlspecialchars($categoria['nome']); ?></td>
+                                </tr>
+                            <?php endforeach; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <a href="dashboard.php" class="btn btn-outline-success mt-4"><i class="bi bi-arrow-left"></i> Voltar ao Dashboard</a>
         </div>
     </div>
 
