@@ -69,6 +69,46 @@ body {
     transform: rotate(-5deg) scale(1.1);
 }
 
+body.login-page {
+    background-image: url('bg.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-attachment: fixed;
+}
+
+.background-overlay {
+    position: absolute;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.452);
+    z-index: 0;
+}
+
+
+.login-container {
+    position: relative;
+    z-index: 1;
+}
+
+.sidebar-btn {
+    background-color: #27693b; /* Cor do botão */
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    margin-bottom: 0.5rem;
+    color: white;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.sidebar-btn:hover {
+    background-color: #1abc9c;
+    transform: scale(1.02);
+    text-decoration: none;
+}
+
+.sidebar-btn i {
+    font-size: 1.2rem;
+}
+
 .sidebar h3 {
     color: var(--light-color);
     font-weight: bold;

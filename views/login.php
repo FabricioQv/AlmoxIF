@@ -19,7 +19,10 @@ if (isset($_SESSION["usuario"])) {
     <!-- CSS Personalizado -->
     <link rel="stylesheet" href="../public/styles.css">
 </head>
-<body class="d-flex justify-content-center align-items-center vh-100 bg-light">
+<body class="d-flex justify-content-center align-items-center vh-100 bg-light login-page">
+
+
+    <div class="background-overlay"></div>
 
     <div class="card p-5 rounded-4 shadow-lg" style="max-width: 420px; width: 100%;">
         <div class="text-center mb-4">
