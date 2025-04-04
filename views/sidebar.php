@@ -51,11 +51,6 @@
         <!-- Admin Only -->
         <?php if ($_SESSION["usuario"]["fk_Role_id_role"] == 1): ?> 
             <li class="nav-item">
-                <a class="nav-link nav-anim d-flex align-items-center sidebar-btn" href="cadastro_usuario.php">
-                    <i class="bi bi-person-plus me-2 icon-anim"></i> <span>Cadastrar Usuário</span>
-                </a>
-            </li>
-            <li class="nav-item">
                 <a class="nav-link nav-anim d-flex align-items-center sidebar-btn" href="importar_csv.php">
                     <i class="bi bi-upload me-2 icon-anim"></i> <span>Importar CSV</span>
                 </a>
@@ -65,6 +60,25 @@
                     <i class="bi bi-tags me-2 icon-anim"></i> <span>Cadastrar Categoria</span>
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link toggle-menu nav-anim d-flex align-items-center sidebar-btn" href="#">
+                    <i class="bi bi-person-gear me-2 icon-anim"></i> <span>Painel de Usuários</span>
+                    <i class="bi bi-chevron-down ms-auto chevron-icon"></i>
+                </a>
+                <ul class="nav flex-column sub-menu ms-3 mt-1">
+                    <li>
+                        <a class="nav-link nav-anim d-flex align-items-center sidebar-btn" href="cadastro_usuario.php">
+                            <i class="bi bi-person-plus me-2"></i> Cadastrar Usuário
+                        </a>
+                    </li>
+                    <li>
+                        <a class="nav-link nav-anim d-flex align-items-center sidebar-btn" href="usuarios.php">
+                            <i class="bi bi-people-fill me-2"></i> Visualizar Usuários
+                        </a>
+                    </li>
+                </ul>
+            </li>
+
         <?php endif; ?>
     </ul>
 </div>

@@ -77,6 +77,25 @@ body.login-page {
     background-attachment: fixed;
 }
 
+.sidebar.enhanced-sidebar {
+    max-height: 100vh;       /* Altura máxima igual à altura da tela */
+    overflow-y: auto;        /* Adiciona scroll vertical se necessário */
+    scrollbar-width: thin;   /* Firefox */
+}
+
+.sidebar.enhanced-sidebar::-webkit-scrollbar {
+    width: 8px;
+  }
+  
+  .sidebar.enhanced-sidebar::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 255, 255, 0.3);  /* cor da barra */
+    border-radius: 10px;
+  }
+  
+  .sidebar.enhanced-sidebar::-webkit-scrollbar-track {
+    background-color: transparent;
+  }
+
 .background-overlay {
     position: absolute;
     inset: 0;

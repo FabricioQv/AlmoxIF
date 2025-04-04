@@ -76,5 +76,20 @@ class UsuarioDAO {
         $stmt->bindParam(":id", $id_usuario);
         return $stmt->execute();
     }
+    
+    public function listarTodos() {
+        $sql = "SELECT * FROM usuario";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+    public function excluirUsuario($id_usuario) {
+        $sql = "DELETE FROM usuario WHERE id_usuario = :id";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":id", $id_usuario);
+        return $stmt->execute();
+    }
+    
 }
 ?>
