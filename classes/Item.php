@@ -36,7 +36,7 @@ class Item
 
     public function getDatadataValidade()
     {
-        return $this->datadataValidade;
+        return $this->dataValidade;
     }
 
     public function getCodigo()

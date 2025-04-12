@@ -39,6 +39,31 @@ class Movimento {
     public function getObservacao() {
         return $this->observacao;
     }
+
+    public function setItemId($itemId) {
+        $this->itemId = $itemId;
+    }
+    
+    public function setUsuarioId($usuarioId) {
+        $this->usuarioId = $usuarioId;
+    }
+    
+    public function setTipo($tipo) {
+        $this->tipo = $tipo;
+    }
+    
+    public function setQuantidade($quantidade) {
+        $this->quantidade = $quantidade;
+    }
+    
+    public function setValidade($validade) {
+        $this->validade = $validade;
+    }
+    
+    public function setObservacao($observacao) {
+        $this->observacao = $observacao;
+    }
+    
 }
 
 ?>

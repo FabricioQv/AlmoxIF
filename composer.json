@@ -1,0 +1,16 @@
+{
+    "name": "almoxif/composer",
+    "autoload": {
+        "psr-4": {
+            "Almoxif\\Composer\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Fabricio Quevedo"
+        }
+    ],
+    "require": {
+        "smalot/pdfparser": "^2.12"
+    }
+}

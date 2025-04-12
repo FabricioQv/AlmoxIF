@@ -75,6 +75,16 @@ class ItemDAO {
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
+    public function buscarPorCodigo($codigo) {
+        $sql = "SELECT * FROM item WHERE codigo = :codigo";
+        $stmt = $this->conn->prepare($sql);
+        $stmt->bindParam(":codigo", $codigo);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+    
+    
     
     
     public function listarItensComEstoque() {

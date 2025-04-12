@@ -15,35 +15,40 @@ class MovimentoDAO {
     
             $sql = "INSERT INTO movimentacao (fk_item_id, fk_usuario_id, tipo, quantidade, validade, observacao) 
                     VALUES (:item, :usuario, :tipo, :quantidade, :validade, :observacao)";
-
-
-            
-            
+    
             $stmt = $this->conn->prepare($sql);
-
-            $stmt->bindParam(":item", $movimento->getItemId());
-            $stmt->bindParam(":usuario", $movimento->getUsuarioId());
-            $stmt->bindParam(":tipo", $movimento->getTipo());
-            $stmt->bindParam(":quantidade", $movimento->getQuantidade());
-            $stmt->bindParam(":observacao", $movimento->getObservacao());
-            $stmt->bindParam(":validade", $movimento->getValidade());
-            
+    
+            // ✅ Primeiro armazenamos em variáveis para evitar o notice
+            $itemId = $movimento->getItemId();
+            $usuarioId = $movimento->getUsuarioId();
+            $tipo = $movimento->getTipo();
+            $quantidade = $movimento->getQuantidade();
+            $validade = $movimento->getValidade();
+            $observacao = $movimento->getObservacao();
+    
+            // ✅ Agora usamos as variáveis no bindParam
+            $stmt->bindParam(":item", $itemId);
+            $stmt->bindParam(":usuario", $usuarioId);
+            $stmt->bindParam(":tipo", $tipo);
+            $stmt->bindParam(":quantidade", $quantidade);
+            $stmt->bindParam(":validade", $validade);
+            $stmt->bindParam(":observacao", $observacao);
+    
             if (!$stmt->execute()) {
                 $this->conn->rollBack();
                 return false;
             }
-            
-            
+    
             // Registrar log de movimentação com a observação
             $logSucesso = $this->registrarLog(
-                $movimento->getItemId(),
-                $movimento->getUsuarioId(),
-                $movimento->getTipo(),
-                $movimento->getQuantidade(),
-                $movimento->getValidade(),
-                $movimento->getObservacao() // Usar a observação original
+                $itemId,
+                $usuarioId,
+                $tipo,
+                $quantidade,
+                $validade,
+                $observacao
             );
-            
+    
             if (!$logSucesso) {
                 $this->conn->rollBack();
                 return false;
@@ -56,6 +61,7 @@ class MovimentoDAO {
             return false;
         }
     }
+    
 
     public function listarMovimentacoes() {
         $sql = "SELECT 
@@ -101,7 +107,7 @@ class MovimentoDAO {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    
+
     public function obterItensMaisMovimentados($itemId = null) {
         $sql = "SELECT 
                     i.nome AS item_nome, 
