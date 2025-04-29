@@ -4,6 +4,11 @@ if (!isset($_SESSION["usuario"])) {
     header("Location: login.php");
     exit();
 }
+
+if ($_SESSION['usuario']['fk_Role_id_role'] == 3) {
+    header("Location: estoque.php");
+    exit();
+}
 ?>
 
 <!DOCTYPE html>

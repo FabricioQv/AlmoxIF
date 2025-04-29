@@ -4,6 +4,11 @@ if (!isset($_SESSION["usuario"]) || $_SESSION["usuario"]["fk_Role_id_role"] != 1
     header("Location: login.php");
     exit();
 }
+
+if ($_SESSION['usuario']['fk_Role_id_role'] == 3) {
+    header("Location: estoque.php");
+    exit();
+}
 require_once "../dao/RoleDAO.php";
 
 $roleDAO = new RoleDAO();

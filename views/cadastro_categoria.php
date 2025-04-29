@@ -7,6 +7,11 @@ if (!isset($_SESSION["usuario"])) {
     exit();
 }
 
+if ($_SESSION['usuario']['fk_Role_id_role'] == 3) {
+    header("Location: estoque.php");
+    exit();
+}
+
 $categoriaDAO = new CategoriaDAO();
 $categorias = $categoriaDAO->listarTodos();
 $sucesso = isset($_GET['sucesso']);

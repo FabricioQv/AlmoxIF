@@ -7,6 +7,11 @@ if (!isset($_SESSION["usuario"])) {
     exit();
 }
 
+if ($_SESSION['usuario']['fk_Role_id_role'] == 3) {
+    header("Location: estoque.php");
+    exit();
+}
+
 $movimentoDAO = new MovimentoDAO();
 
 $itemIdSelecionado = $_GET['item_id'] ?? null;
