@@ -5,6 +5,11 @@ if (!isset($_SESSION["usuario"])) {
     exit();
 }
 
+
+if ($_SESSION['usuario']['fk_Role_id_role'] == 3) {
+    header("Location: estoque.php");
+    exit();
+}
 require_once "../dao/MovimentoDAO.php";
 $movimentoDAO = new MovimentoDAO();
 $movimentacoes = $movimentoDAO->listarMovimentacoes();

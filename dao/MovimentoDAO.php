@@ -183,6 +183,26 @@ class MovimentoDAO {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function listarEstoqueSimples() {
+        $sql = "SELECT 
+                    i.id_item, 
+                    i.nome, 
+                    i.codigo,
+                    i.unidade,
+                    i.imagem,
+                    COALESCE(SUM(CASE WHEN m.tipo = 'entrada' THEN m.quantidade ELSE 0 END), 0) 
+                  - COALESCE(SUM(CASE WHEN m.tipo = 'saida' THEN m.quantidade ELSE 0 END), 0) 
+                    AS estoque_atual
+                FROM item i
+                LEFT JOIN movimentacao m ON i.id_item = m.fk_item_id
+                GROUP BY i.id_item";
+        
+        $stmt = $this->conn->prepare($sql);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
+
     public function listarEstoque() {
         $sql = "SELECT 
                     i.id_item, 

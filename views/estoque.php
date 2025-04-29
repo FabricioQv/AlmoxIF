@@ -8,13 +8,20 @@ if (!isset($_SESSION["usuario"])) {
 require_once "../dao/MovimentoDAO.php";
 $movimentoDAO = new MovimentoDAO();
 
-$itens = $movimentoDAO->listarEstoque();
-$usuario = $_SESSION["usuario"]; // Pegando os dados do usuário para exibir na navbar
-$itensBaixos = array_filter($itens, function ($item) {
-    return $item["estoque_baixo"] == 1;
-});
+$usuario = $_SESSION["usuario"];
+$isProfessor = ($usuario['fk_Role_id_role'] == 3);
 
+$itens = $isProfessor
+    ? $movimentoDAO->listarEstoqueSimples()
+    : $movimentoDAO->listarEstoque();
 
+$itensBaixos = [];
+
+if (!$isProfessor) {
+    $itensBaixos = array_filter($itens, function ($item) {
+        return !empty($item["estoque_baixo"]);
+    });
+}
 ?>
 
 <!DOCTYPE html>
@@ -23,7 +30,7 @@ $itensBaixos = array_filter($itens, function ($item) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Estoque - Estoque IFSul</title>
-    
+
     <!-- Bootstrap 5 -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="../public/styles.css">
@@ -34,26 +41,29 @@ $itensBaixos = array_filter($itens, function ($item) {
     <?php include "sidebar.php"; ?> 
     <?php include "navbar.php"; ?>
 
-    <!-- Conteúdo Principal -->
     <div class="main-content">
         <div class="table-responsive table-custom w-100">
             <table id="tabelaEstoque" class="table table-striped table-bordered dataTable">
                 <thead>
                     <tr>
                         <th>Imagem</th>
-                        <th>Codigo</th>
+                        <th>Código</th>
                         <th>Nome</th>
-                        <th>Categoria</th>
-                        <th>Unidade</th>
+                        <?php if (!$isProfessor): ?>
+                            <th>Categoria</th>
+                            <th>Unidade</th>
+                        <?php endif; ?>
                         <th>Estoque Atual</th>
-                        <th>Estoque Crítico</th>
-                        <th>Validade Mais Próxima</th>
-                        <th>Editar</th>
+                        <?php if (!$isProfessor): ?>
+                            <th>Estoque Crítico</th>
+                            <th>Validade Mais Próxima</th>
+                            <th>Editar</th>
+                        <?php endif; ?>
                     </tr>
                 </thead>
                 <tbody>
                     <?php foreach ($itens as $item): ?>
-                        <tr class="<?= $item['estoque_baixo'] ? 'table-danger' : '' ?>">
+                        <tr class="<?= (!empty($item['estoque_baixo']) ? 'table-danger' : '') ?>">
                             <td>
                                 <img src="../uploads/<?= !empty($item["imagem"]) ? htmlspecialchars($item["imagem"]) : 'default.png'; ?>" 
                                     alt="Imagem do item" 
@@ -62,28 +72,32 @@ $itensBaixos = array_filter($itens, function ($item) {
                             </td>
                             <td><?= htmlspecialchars($item["codigo"]); ?></td>
                             <td><?= htmlspecialchars($item["nome"]); ?></td>
-                            <td><?= htmlspecialchars($item["categoria_nome"]); ?></td>
-                            <td><?= htmlspecialchars($item["unidade"]); ?></td>
+                            <?php if (!$isProfessor): ?>
+                                <td><?= htmlspecialchars($item["categoria_nome"]); ?></td>
+                                <td><?= htmlspecialchars($item["unidade"]); ?></td>
+                            <?php endif; ?>
                             <td><?= htmlspecialchars($item["estoque_atual"] ?? 0); ?></td>
-                            <td><?= ($item["estoqueCritico"] !== null) ? htmlspecialchars($item["estoqueCritico"]) : '—'; ?></td>
-                            <td>
-                                <?php 
-                                    $validade = $item["validade_mais_proxima"] ?? null;
-                                    if ($validade && $item["estoque_atual"] > 0) {
-                                        $hoje = date("Y-m-d");
-                                        $diferenca = (strtotime($validade) - strtotime($hoje)) / (60 * 60 * 24);
-                                        $cor = ($diferenca <= 30) ? "bg-danger text-white" : "bg-success";
-                                        echo "<span class='badge $cor'>" . date("d/m/Y", strtotime($validade)) . "</span>";
-                                    } else {
-                                        echo "<span class='badge bg-secondary'>Não Perecível</span>";
-                                    }
-                                ?>
-                            </td>
-                            <td>
-                                <a href="editar_item.php?id=<?= $item['id_item']; ?>" class="btn btn-sm btn-warning">
-                                    <i class="bi bi-pencil"></i> Editar
-                            </a>
-                        </td>
+                            <?php if (!$isProfessor): ?>
+                                <td><?= ($item["estoqueCritico"] !== null) ? htmlspecialchars($item["estoqueCritico"]) : '—'; ?></td>
+                                <td>
+                                    <?php 
+                                        $validade = $item["validade_mais_proxima"] ?? null;
+                                        if ($validade && $item["estoque_atual"] > 0) {
+                                            $hoje = date("Y-m-d");
+                                            $diferenca = (strtotime($validade) - strtotime($hoje)) / (60 * 60 * 24);
+                                            $cor = ($diferenca <= 30) ? "bg-danger text-white" : "bg-success";
+                                            echo "<span class='badge $cor'>" . date("d/m/Y", strtotime($validade)) . "</span>";
+                                        } else {
+                                            echo "<span class='badge bg-secondary'>Não Perecível</span>";
+                                        }
+                                    ?>
+                                </td>
+                                <td>
+                                    <a href="editar_item.php?id=<?= $item['id_item']; ?>" class="btn btn-sm btn-warning">
+                                        <i class="bi bi-pencil"></i> Editar
+                                    </a>
+                                </td>
+                            <?php endif; ?>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
@@ -103,7 +117,6 @@ $itensBaixos = array_filter($itens, function ($item) {
             </div>
         <?php endif; ?>
     </div>
-
 
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -136,12 +149,12 @@ $itensBaixos = array_filter($itens, function ($item) {
         });
 
         document.addEventListener("DOMContentLoaded", function () {
-        let toastEl = document.getElementById("estoqueBaixoToast");
-        if (toastEl) {
-            let toast = new bootstrap.Toast(toastEl);
-            toast.show();
-        }
-    });
+            let toastEl = document.getElementById("estoqueBaixoToast");
+            if (toastEl) {
+                let toast = new bootstrap.Toast(toastEl);
+                toast.show();
+            }
+        });
     </script>
 </body>
 </html>

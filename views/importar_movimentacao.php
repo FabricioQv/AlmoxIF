@@ -2,6 +2,11 @@
 session_start();
 require '../services/leitor_pdf_service.php';
 
+if ($_SESSION['usuario']['fk_Role_id_role'] == 3) {
+    header("Location: estoque.php");
+    exit();
+}
+
 $itensEncontrados = [];
 $mensagemSucesso = $_GET['sucesso'] ?? null;
 $mensagemErro = $_GET['erro'] ?? null;
