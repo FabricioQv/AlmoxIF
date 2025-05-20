@@ -41,8 +41,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         exit();
     }
 
-    // Cadastrar o item no banco de dados
-    $sucesso = $itemDAO->cadastrarItem($nome, $codigo, $categoria, $estoqueCritico, $quantidade, $validade, $imagemNome, $unidade );
+    $usuarioId = $_SESSION["usuario"]["id_usuario"];
+    $sucesso = $itemDAO->cadastrarItem($nome, $codigo, $categoria, $estoqueCritico, $quantidade, $validade, $imagemNome, $unidade, $usuarioId );
 
     if ($sucesso) {
         header("Location: ../views/cadastro_item.php?sucesso=1");

@@ -15,7 +15,7 @@ class ItemDAO {
         $stmt->execute();
         return $stmt->fetchColumn() > 0;
     }
-    public function cadastrarItem($nome, $codigo, $categoria, $estoqueCritico, $quantidade, $validade, $imagemNome, $unidade) {
+    public function cadastrarItem($nome, $codigo, $categoria, $estoqueCritico, $quantidade, $validade, $imagemNome, $unidade, $usuarioId) {
         try {
             $this->conn->beginTransaction();
     
@@ -33,8 +33,7 @@ class ItemDAO {
             $stmtItem->execute();
             $itemId = $this->conn->lastInsertId();
     
-            // Obtém o ID do usuário logado
-            session_start();
+
             $usuarioId = $_SESSION["usuario"]["id_usuario"] ?? null;
             if (!$usuarioId) {
                 throw new Exception("Usuário não autenticado. Impossível registrar movimentação.");
@@ -92,6 +91,7 @@ class ItemDAO {
             SELECT 
                 i.id_item AS codigo,
                 i.nome AS nome,
+                i.unidade as unidade,
                 COALESCE(SUM(CASE 
                     WHEN m.tipo = 'entrada' THEN m.quantidade 
                     WHEN m.tipo = 'saida' THEN -m.quantidade 

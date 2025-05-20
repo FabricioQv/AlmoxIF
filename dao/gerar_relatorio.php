@@ -1,47 +1,71 @@
 <?php
-session_start();
+require '../vendor/autoload.php';
 require_once "../dao/MovimentoDAO.php";
+session_start();
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 if (!isset($_SESSION["usuario"])) {
     header("Location: ../views/login.php");
     exit();
 }
 
-// Definir datas do formulário
-$dataInicio = isset($_POST["dataInicio"]) ? $_POST["dataInicio"] : date("Y-m-d");
-$dataFim = isset($_POST["dataFim"]) ? $_POST["dataFim"] : date("Y-m-d");
-
-
-
+$dataInicio = $_POST["dataInicio"] ?? date("Y-m-d");
+$dataFim = $_POST["dataFim"] ?? date("Y-m-d");
 
 $movimentoDAO = new MovimentoDAO();
 $dados = $movimentoDAO->gerarRelatorioMovimentacao($dataInicio, $dataFim);
 
+$spreadsheet = new Spreadsheet();
+$sheet = $spreadsheet->getActiveSheet();
 
-$arquivo = "relatorio_estoque_" . date("Ymd_His") . ".csv";
+// Cabeçalhos
+$sheet->setCellValue('A1', 'Item');
+$sheet->setCellValue('B1', 'Estoque Inicial');
+$sheet->setCellValue('C1', 'Entradas');
+$sheet->setCellValue('D1', 'Saídas');
+$sheet->setCellValue('E1', 'Estoque Final');
 
-// Configurar cabeçalhos para download
-header("Content-Type: text/csv; charset=UTF-8");
-header("Content-Disposition: attachment; filename=$arquivo");
+// Estilo do cabeçalho
+$headerStyle = $sheet->getStyle('A1:E1');
+$headerStyle->getFont()->setBold(true);
+$headerStyle->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+$headerStyle->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('D4F4DD');
 
-// Criar o arquivo CSV
-$saida = fopen("php://output", "w");
+// Ajustes de colunas
+$sheet->getColumnDimension('A')->setWidth(40); // Item
+$sheet->getStyle('A')->getAlignment()->setWrapText(true);
+$sheet->getDefaultRowDimension()->setRowHeight(-1);
+$sheet->getColumnDimension('B')->setAutoSize(true);
+$sheet->getColumnDimension('C')->setAutoSize(true);
+$sheet->getColumnDimension('D')->setAutoSize(true);
+$sheet->getColumnDimension('E')->setAutoSize(true);
 
-// Escrever o cabeçalho do CSV
-fputcsv($saida, ["Item", "Estoque Inicial", "Entradas", "Saídas", "Estoque Final"], ";");
-
-// Escrever os dados corretamente, substituindo valores nulos
+// Preenchimento dos dados
+$row = 2;
 foreach ($dados as $linha) {
-    fputcsv($saida, [
-        $linha["item_nome"],
-        !empty($linha["estoque_inicial"]) ? $linha["estoque_inicial"] : 0,
-        !empty($linha["total_entrada"]) ? $linha["total_entrada"] : 0,
-        !empty($linha["total_saida"]) ? $linha["total_saida"] : 0,
-        !empty($linha["estoque_final"]) ? $linha["estoque_final"] : 0
-    ], ";");
+    $sheet->setCellValue("A{$row}", $linha["item_nome"]);
+    $sheet->setCellValue("B{$row}", $linha["estoque_inicial"] ?? 0);
+    $sheet->setCellValue("C{$row}", $linha["total_entrada"] ?? 0);
+    $sheet->setCellValue("D{$row}", $linha["total_saida"] ?? 0);
+    $sheet->setCellValue("E{$row}", $linha["estoque_final"] ?? 0);
+    $row++;
 }
 
+// Aplica bordas nas células preenchidas
+$ultimaLinha = $row - 1;
+$sheet->getStyle("A1:E$ultimaLinha")->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
 
-fclose($saida);
-exit();
-?>
+// Exporta o arquivo
+$filename = "relatorio_estoque_" . date("Ymd_His") . ".xlsx";
+header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+header("Content-Disposition: attachment;filename=\"$filename\"");
+header("Cache-Control: max-age=0");
+
+$writer = new Xlsx($spreadsheet);
+$writer->save('php://output');
+exit;

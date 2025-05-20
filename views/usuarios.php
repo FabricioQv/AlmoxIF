@@ -42,9 +42,9 @@ $usuarios = $dao->listarTodos();
         <?php foreach ($usuarios as $usuario): ?>
             <tr>
                 <td><?= $usuario["id_usuario"] ?></td>
-                <td><?= htmlspecialchars($usuario["nome"]) ?></td>
-                <td><?= htmlspecialchars($usuario["siape"]) ?></td>
-                <td><?= htmlspecialchars($usuario["login"]) ?></td>
+                <td><?= htmlspecialchars($usuario["nome"] ?? '') ?></td>
+                <td><?= htmlspecialchars($usuario["siape"] ?? '') ?></td>
+                <td><?= htmlspecialchars($usuario["login"] ?? '') ?></td>
                 <td><?= ($usuario["fk_Role_id_role"] == 1) ? "Administrador" : "Estoquista" ?></td>
                 <td>
                     <?php if ($_SESSION["usuario"]["id_usuario"] != $usuario["id_usuario"]): ?>

@@ -10,14 +10,14 @@ class CategoriaDAO {
     }
 
     public function listarTodos() {
-        $sql = "SELECT * FROM Categoria";
+        $sql = "SELECT * FROM categoria";
         $stmt = $this->conn->prepare($sql);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function buscarPorId($id) {
-        $sql = "SELECT * FROM Categoria WHERE id_categoria = :id";
+        $sql = "SELECT * FROM categoria WHERE id_categoria = :id";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(":id", $id);
         $stmt->execute();
@@ -25,7 +25,7 @@ class CategoriaDAO {
     }
     
     public function criarCategoria($nome) {
-        $sql = "INSERT INTO Categoria (nome) VALUES (:nome)";
+        $sql = "INSERT INTO categoria (nome) VALUES (:nome)";
         $stmt = $this->conn->prepare($sql);
         $stmt->bindParam(":nome", $nome);
         return $stmt->execute();

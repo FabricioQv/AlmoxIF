@@ -17,11 +17,17 @@ class UsuarioDAO {
         $sql = "INSERT INTO usuario (nome, siape, login, senha, fk_Role_id_role) 
                 VALUES (:nome, :siape, :login, :senha, :role)";
         $stmt = $this->conn->prepare($sql);
-        $stmt->bindParam(":nome", $usuario->getNome());
-        $stmt->bindParam(":siape", $usuario->getSiape());
-        $stmt->bindParam(":login", $usuario->getLogin());
-        $stmt->bindParam(":senha", $usuario->getSenha());
-        $stmt->bindParam(":role", $usuario->getRoleId());
+        $nome  = $usuario->getNome();
+        $siape = $usuario->getSiape();
+        $login = $usuario->getLogin();
+        $senha = $usuario->getSenha();
+        $role  = $usuario->getRoleId();
+
+        $stmt->bindParam(":nome", $nome);
+        $stmt->bindParam(":siape", $siape);
+        $stmt->bindParam(":login", $login);
+        $stmt->bindParam(":senha", $senha);
+        $stmt->bindParam(":role", $role);
 
         return $stmt->execute();
     }

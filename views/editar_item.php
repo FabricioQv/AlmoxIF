@@ -53,7 +53,7 @@ $erro = isset($_GET['erro']);
                 <h4 class="mb-0 text-success">Editar Item</h4>
             </div>
 
-            <form action="../dao/processa_edicao_item.php" method="POST" enctype="multipart/form-data">
+            <form action="../dao/processar_edicao_item.php" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="id_item" value="<?= $item['id_item'] ?>">
 
                 <div class="mb-3">

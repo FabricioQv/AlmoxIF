@@ -1,6 +1,13 @@
 <?php
-session_start();
+require '../vendor/autoload.php';
 require_once "../dao/ItemDAO.php";
+session_start();
+
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
 
 if (!isset($_SESSION["usuario"])) {
     header("Location: ../views/login.php");
@@ -8,29 +15,59 @@ if (!isset($_SESSION["usuario"])) {
 }
 
 $itemDAO = new ItemDAO();
-$itens = $itemDAO->listarItensComEstoque(); // Método novo que você pode criar para obter código, nome e estoque
+$itens = $itemDAO->listarItensComEstoque();
 
-$arquivo = "relatorio_material_consumo_" . date("Ymd_His") . ".csv";
+$spreadsheet = new Spreadsheet();
+$sheet = $spreadsheet->getActiveSheet();
 
-// Cabeçalhos para download
-header("Content-Type: text/csv; charset=UTF-8");
-header("Content-Disposition: attachment; filename=$arquivo");
+// Cabeçalhos
+$sheet->setCellValue('A1', 'Código');
+$sheet->setCellValue('B1', 'Material de Consumo');
+$sheet->setCellValue('C1', 'Estoque');
+$sheet->setCellValue('D1', 'Unidade');
+$sheet->setCellValue('E1', 'Fichas');
+$sheet->setCellValue('F1', 'Físico');
+$sheet->setCellValue('G1', 'Observações');
 
-// Gera o CSV
-$saida = fopen("php://output", "w");
+// Estilo do cabeçalho
+$headerStyle = $sheet->getStyle('A1:G1');
+$headerStyle->getFont()->setBold(true);
+$headerStyle->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+$headerStyle->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('D4F4DD');
 
-// Cabeçalho do relatório
-fputcsv($saida, ["Código", "Material de Consumo", "Estoque", "Fichas", "Físico", "Observações"], ";");
+// Ajuste das colunas
+$sheet->getColumnDimension('A')->setAutoSize(true);
+$sheet->getColumnDimension('B')->setWidth(40);
+$sheet->getStyle('B')->getAlignment()->setWrapText(true);
+$sheet->getColumnDimension('C')->setAutoSize(true);
+$sheet->getColumnDimension('D')->setAutoSize(true);
+$sheet->getColumnDimension('E')->setAutoSize(true);
+$sheet->getColumnDimension('F')->setAutoSize(true);
+$sheet->getColumnDimension('G')->setAutoSize(true);
+$sheet->getDefaultRowDimension()->setRowHeight(-1);
 
-// Linhas do relatório
+// Preenchimento dos dados
+$row = 2;
 foreach ($itens as $item) {
-    fputcsv($saida, [
-        $item["codigo"],
-        $item["nome"],
-        $item["estoque"],
-        "", "", "" // Campos extras em branco para preenchimento manual
-    ], ";");
+    $sheet->setCellValue("A{$row}", $item["codigo"]);
+    $sheet->setCellValue("B{$row}", $item["nome"]);
+    $sheet->setCellValue("C{$row}", $item["estoque"]);
+    $sheet->setCellValue("D{$row}", $item["unidade"]);
+    $sheet->setCellValue("E{$row}", '');
+    $sheet->setCellValue("F{$row}", '');
+    $sheet->setCellValue("G{$row}", '');
+    $row++;
 }
 
-fclose($saida);
-exit();
+// Aplica bordas em todas as células utilizadas
+$ultimaLinha = $row - 1;
+$sheet->getStyle("A1:G$ultimaLinha")->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+
+$filename = "relatorio_material_consumo_" . date("Ymd_His") . ".xlsx";
+header("Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+header("Content-Disposition: attachment;filename=\"$filename\"");
+header("Cache-Control: max-age=0");
+
+$writer = new Xlsx($spreadsheet);
+$writer->save('php://output');
+exit;
