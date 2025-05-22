@@ -30,5 +30,13 @@ class CategoriaDAO {
         $stmt->bindParam(":nome", $nome);
         return $stmt->execute();
     }
+
+    public function atualizarNome($id, $novoNome) {
+    $sql = "UPDATE categoria SET nome = :nome WHERE id_categoria = :id";
+    $stmt = $this->conn->prepare($sql);
+    $stmt->bindParam(":nome", $novoNome);
+    $stmt->bindParam(":id", $id);
+    $stmt->execute();
+}
 }
 ?>

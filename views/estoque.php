@@ -92,9 +92,14 @@ if (!$isProfessor) {
                 <tr class="<?= (!empty($item['estoque_baixo']) ? 'table-danger' : '') ?>">
                     <td>
                         <img src="../uploads/<?= !empty($item["imagem"]) ? htmlspecialchars($item["imagem"]) : 'default.png'; ?>"
-                             alt="Imagem do item"
-                             class="item-img"
-                             onerror="this.src='../uploads/default.png'; this.alt='Imagem não encontrada';">
+                            alt="Imagem do item"
+                            class="item-img"
+                            style="cursor:pointer"
+                            data-bs-toggle="modal"
+                            data-bs-target="#imagemModal"
+                            data-img="../uploads/<?= !empty($item["imagem"]) ? htmlspecialchars($item["imagem"]) : 'default.png'; ?>"
+                            onerror="this.src='../uploads/default.png'; this.alt='Imagem não encontrada';">
+
                     </td>
                     <td><?= htmlspecialchars($item["codigo"]); ?></td>
                     <td><?= htmlspecialchars($item["nome"]); ?></td>
@@ -135,6 +140,21 @@ if (!$isProfessor) {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+<!-- Modal de Imagem -->
+<div class="modal fade" id="imagemModal" tabindex="-1" aria-labelledby="imagemModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="imagemModalLabel">Visualizar Imagem</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img id="imagemExpandida" src="" class="img-fluid" alt="Imagem ampliada">
+      </div>
+    </div>
+  </div>
+</div>
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
@@ -165,6 +185,17 @@ if (!$isProfessor) {
             ordering: true,
         });
     });
+</script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var imagemModal = document.getElementById('imagemModal');
+    imagemModal.addEventListener('show.bs.modal', function (event) {
+        var trigger = event.relatedTarget;
+        var src = trigger.getAttribute('data-img');
+        var img = document.getElementById('imagemExpandida');
+        img.src = src;
+    });
+});
 </script>
 </body>
 </html>
