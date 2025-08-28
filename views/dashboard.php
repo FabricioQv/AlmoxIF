@@ -168,5 +168,31 @@ include 'navbar.php';
         }
     });
 </script>
+
+
+<?php
+$role = $_SESSION["usuario"]["fk_Role_id_role"] ?? null;
+
+if ($role == 2) { // 2 = Estoquista
+    echo '
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+        <df-messenger
+        intent="WELCOME"
+        chat-title="Almoxifo Estoquista"
+        agent-id="68721396-3caf-4f0d-8c78-d0eaab155bbe"
+        language-code="en"
+    ></df-messenger>';
+} elseif ($role == 1) { // 1 = Administrador
+    echo '
+    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+    <df-messenger
+        intent="WELCOME"
+        chat-title="Almoxifo Administrador"
+        agent-id="faef5d6a-69d6-4051-9f98-1957690b5821"
+        language-code="pt-br">
+    ></df-messenger>';
+}
+?>
+
 </body>
 </html>

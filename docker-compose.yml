@@ -6,10 +6,27 @@ services:
     container_name: almoxif_web
     ports:
       - "80:80"
+<<<<<<< Updated upstream
     volumes:
       - ./:/var/www/html
     networks:
       - almoxif_net
+=======
+      - "443:443"
+    volumes:
+      - ./:/var/www/html
+      - ./ssl:/etc/apache2/ssl
+      - ./vhost.conf:/etc/apache2/sites-available/000-default.conf
+      - ./vhost-ssl.conf:/etc/apache2/sites-available/default-ssl.conf
+    networks:
+      - almoxif_net
+    command: >
+      bash -c "
+      a2enmod ssl &&
+      a2ensite default-ssl &&
+      apache2-foreground
+      "
+>>>>>>> Stashed changes
 
   db:
     image: mysql:5.7

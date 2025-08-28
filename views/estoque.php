@@ -57,9 +57,39 @@ if (!$isProfessor) {
                     ⚠️ <strong>Atenção:</strong> Os seguintes itens estão com <strong>estoque crítico</strong> ou <strong>validade próxima</strong>:
                     <ul class="mb-0 mt-2 ps-3">
                         <?php foreach ($itensBaixos as $item): ?>
+<<<<<<< Updated upstream
                             <li><?= htmlspecialchars($item["nome"]); ?> (<?= htmlspecialchars($item["codigo"]); ?>)</li>
                         <?php endforeach; ?>
                     </ul>
+=======
+                            <?php
+                                $mensagem = htmlspecialchars($item["nome"]) . " (" . htmlspecialchars($item["codigo"]) . ")";
+                                $avisos = [];
+
+                                if (!empty($item["estoque_baixo"])) {
+                                    $avisos[] = "estoque crítico";
+                                }
+
+                                if (!empty($item["validade_mais_proxima"])) {
+                                    $dias = (int)((strtotime($item["validade_mais_proxima"]) - strtotime(date("Y-m-d"))) / 86400);
+                                    if ($dias < 0) {
+                                        $avisos[] = "vencido há " . abs($dias) . " dias";
+                                    } elseif ($dias === 0) {
+                                        $avisos[] = "vence hoje";
+                                    } else {
+                                        $avisos[] = "vence em $dias dias";
+                                    }
+                                }
+
+                                if (!empty($avisos)) {
+                                    $mensagem .= " — " . implode(" e ", $avisos);
+                                }
+                            ?>
+                            <li><?= $mensagem ?></li>
+                        <?php endforeach; ?>
+                    </ul>
+>
+>>>>>>> Stashed changes
                 </div>
                 <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
             </div>
@@ -92,6 +122,7 @@ if (!$isProfessor) {
                 <tr class="<?= (!empty($item['estoque_baixo']) ? 'table-danger' : '') ?>">
                     <td>
                         <img src="../uploads/<?= !empty($item["imagem"]) ? htmlspecialchars($item["imagem"]) : 'default.png'; ?>"
+<<<<<<< Updated upstream
                             alt="Imagem do item"
                             class="item-img"
                             style="cursor:pointer"
@@ -100,6 +131,11 @@ if (!$isProfessor) {
                             data-img="../uploads/<?= !empty($item["imagem"]) ? htmlspecialchars($item["imagem"]) : 'default.png'; ?>"
                             onerror="this.src='../uploads/default.png'; this.alt='Imagem não encontrada';">
 
+=======
+                             alt="Imagem do item"
+                             class="item-img"
+                             onerror="this.src='../uploads/default.png'; this.alt='Imagem não encontrada';">
+>>>>>>> Stashed changes
                     </td>
                     <td><?= htmlspecialchars($item["codigo"]); ?></td>
                     <td><?= htmlspecialchars($item["nome"]); ?></td>
@@ -140,6 +176,7 @@ if (!$isProfessor) {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
+<<<<<<< Updated upstream
 <!-- Modal de Imagem -->
 <div class="modal fade" id="imagemModal" tabindex="-1" aria-labelledby="imagemModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -156,6 +193,9 @@ if (!$isProfessor) {
 </div>
 
 
+=======
+
+>>>>>>> Stashed changes
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         let toastList = document.querySelectorAll(".toast");
@@ -186,6 +226,7 @@ if (!$isProfessor) {
         });
     });
 </script>
+<<<<<<< Updated upstream
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     var imagemModal = document.getElementById('imagemModal');
@@ -197,5 +238,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+=======
+>>>>>>> Stashed changes
 </body>
 </html>

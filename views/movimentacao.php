@@ -23,8 +23,8 @@ $movimentoDAO = new MovimentoDAO();
 $itens = $itemDAO->listarEstoque();
 $sucesso = isset($_GET['sucesso']);
 $erro = isset($_GET['erro']);
-$mensagemSucesso = null;
-$mensagemErro = null;
+$mensagemSucesso = isset($_GET['sucesso']) ? "Movimentação registrada com sucesso!" : null;
+$mensagemErro = isset($_GET['erro']) ? "Erro ao registrar movimentação." : null;
 
 // Processamento das movimentações vindas do modal AJAX
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['movimentacoes'])) {
@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['movimentacoes'])) {
                 $movimentoDAO->registrarMovimento($movimento);
             }
         }
-        $mensagemSucesso = "Movimentações registradas com sucesso!";
+        $mensagemSucesso = "Movimentação registrada com sucesso!";
     } catch (Exception $e) {
         $mensagemErro = "Erro ao registrar movimentações: " . $e->getMessage();
     }
@@ -75,21 +75,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['movimentacoes'])) {
 <!-- Toast de Mensagens -->
 <div class="toast-container position-fixed top-0 end-0 p-3">
     <?php if ($mensagemSucesso): ?>
-        <div class="toast align-items-center text-bg-success border-0 show" role="alert">
+        <div class="toast align-items-center text-bg-success border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
                 <div class="toast-body"><?= htmlspecialchars($mensagemSucesso) ?></div>
-                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
             </div>
         </div>
     <?php elseif ($mensagemErro): ?>
-        <div class="toast align-items-center text-bg-danger border-0 show" role="alert">
+        <div class="toast align-items-center text-bg-danger border-0" role="alert" aria-live="assertive" aria-atomic="true">
             <div class="d-flex">
                 <div class="toast-body"><?= htmlspecialchars($mensagemErro) ?></div>
-                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Fechar"></button>
             </div>
         </div>
     <?php endif; ?>
 </div>
+
 
 <!-- Conteúdo Principal -->
 <div class="main-content">
@@ -267,6 +268,17 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 });
 </script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const toastElements = document.querySelectorAll('.toast');
+    toastElements.forEach(toastEl => {
+      const toast = new bootstrap.Toast(toastEl);
+      toast.show();
+    });
+  });
+</script>
+
 
 </body>
 </html>
