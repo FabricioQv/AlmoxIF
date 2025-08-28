@@ -7,11 +7,14 @@ services:
     ports:
       - "80:80"
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     volumes:
       - ./:/var/www/html
     networks:
       - almoxif_net
 =======
+=======
+>>>>>>> Stashed changes
       - "443:443"
     volumes:
       - ./:/var/www/html
@@ -26,6 +29,9 @@ services:
       a2ensite default-ssl &&
       apache2-foreground
       "
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 
   db:

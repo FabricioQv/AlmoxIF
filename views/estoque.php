@@ -58,10 +58,13 @@ if (!$isProfessor) {
                     <ul class="mb-0 mt-2 ps-3">
                         <?php foreach ($itensBaixos as $item): ?>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                             <li><?= htmlspecialchars($item["nome"]); ?> (<?= htmlspecialchars($item["codigo"]); ?>)</li>
                         <?php endforeach; ?>
                     </ul>
 =======
+=======
+>>>>>>> Stashed changes
                             <?php
                                 $mensagem = htmlspecialchars($item["nome"]) . " (" . htmlspecialchars($item["codigo"]) . ")";
                                 $avisos = [];
@@ -89,6 +92,9 @@ if (!$isProfessor) {
                         <?php endforeach; ?>
                     </ul>
 >
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
                 </div>
                 <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
@@ -123,6 +129,7 @@ if (!$isProfessor) {
                     <td>
                         <img src="../uploads/<?= !empty($item["imagem"]) ? htmlspecialchars($item["imagem"]) : 'default.png'; ?>"
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
                             alt="Imagem do item"
                             class="item-img"
                             style="cursor:pointer"
@@ -131,6 +138,11 @@ if (!$isProfessor) {
                             data-img="../uploads/<?= !empty($item["imagem"]) ? htmlspecialchars($item["imagem"]) : 'default.png'; ?>"
                             onerror="this.src='../uploads/default.png'; this.alt='Imagem não encontrada';">
 
+=======
+                             alt="Imagem do item"
+                             class="item-img"
+                             onerror="this.src='../uploads/default.png'; this.alt='Imagem não encontrada';">
+>>>>>>> Stashed changes
 =======
                              alt="Imagem do item"
                              class="item-img"
@@ -177,6 +189,7 @@ if (!$isProfessor) {
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.datatables.net/1.13.5/js/jquery.dataTables.min.js"></script>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <!-- Modal de Imagem -->
 <div class="modal fade" id="imagemModal" tabindex="-1" aria-labelledby="imagemModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered modal-lg">
@@ -193,6 +206,9 @@ if (!$isProfessor) {
 </div>
 
 
+=======
+
+>>>>>>> Stashed changes
 =======
 
 >>>>>>> Stashed changes
@@ -227,6 +243,7 @@ if (!$isProfessor) {
     });
 </script>
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 <script>
 document.addEventListener('DOMContentLoaded', function () {
     var imagemModal = document.getElementById('imagemModal');
@@ -238,6 +255,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 });
 </script>
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
 </body>
