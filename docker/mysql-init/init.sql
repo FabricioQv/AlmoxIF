@@ -41,7 +41,7 @@ CREATE TABLE `log_movimentacao` (
   `quantidade` int(11) NOT NULL,
   `validade` date DEFAULT NULL,
   `data_log` timestamp NOT NULL DEFAULT current_timestamp(),
-  `descricao` text NOT NULL
+  `descricao` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 

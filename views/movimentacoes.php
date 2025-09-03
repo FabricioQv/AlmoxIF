@@ -102,7 +102,7 @@ $movimentacoes = $movimentoDAO->listarMovimentacoes();
                 ],
                 "pageLength": 10,
                 "lengthMenu": [10, 25, 50, 100],
-                "order": [[4, 'desc']],
+                "order": [[4, 'asc']],
                 "responsive": true,
                 "language": {
                     "search": "Pesquisar:",

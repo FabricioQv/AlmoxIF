@@ -83,7 +83,6 @@ if (!$isProfessor) {
                             <li><?= $mensagem ?></li>
                         <?php endforeach; ?>
                     </ul>
->
                 </div>
                 <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
             </div>
