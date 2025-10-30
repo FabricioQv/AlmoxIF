@@ -40,6 +40,9 @@ class ImportacaoDAO {
     public function importarDados($dados) {
         try {
             $this->conn->beginTransaction();
+
+            $this->conn->exec("DELETE FROM log_movimentacao");
+            $this->conn->exec("DELETE FROM movimentacao");
     
             // 🔹 Query para verificar se o código já existe
             $sqlVerificarItem = "SELECT id_item FROM item WHERE codigo = :codigo";

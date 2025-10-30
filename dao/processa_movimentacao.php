@@ -25,21 +25,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     }
 
     try {
-        $movimento = new Movimento($itemId, $usuarioId, $tipo, $quantidade, $validade, $observacao);
-        $dao = new MovimentoDAO();
-        
-        if ($tipo === "entrada") {
-            $sucesso = $dao->registrarMovimento($movimento);
-        } elseif ($tipo === "saida") {
-            $item = $itemDAO->buscarPorId($itemId); // precisa criar esse método se não tiver ainda
-            $estoqueAtual = $item['estoque_atual'];
+            $movimento = new Movimento($itemId, $usuarioId, $tipo, $quantidade, $validade, $observacao);
+            $dao = new MovimentoDAO();
+            
+            if ($tipo === "entrada") {
+                $sucesso = $dao->registrarMovimento($movimento);
+            } elseif ($tipo === "saida") {
+                $item = $itemDAO->buscarPorId($itemId); // precisa criar esse método se não tiver ainda
+                $estoqueAtual = $item['estoque_atual'];
 
-            if ($quantidade > $estoqueAtual) {
-                header("Location: ../views/movimentacao.php?erro=estoqueinsuficiente");
-                exit();
-            }
+                if ($quantidade > $estoqueAtual) {
+                    header("Location: ../views/movimentacao.php?erro=estoqueinsuficiente");
+                    exit();
+                }
 
-    $sucesso = $dao->removerItemFIFO($itemId, $quantidade, $observacao);
             $sucesso = $dao->removerItemFIFO($itemId, $quantidade, $observacao);
         }
         

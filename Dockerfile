@@ -1,4 +1,4 @@
-FROM php:8.1-apache
+FROM php:8.1-apache-bullseye
 
 # Instala dependências do sistema necessárias para gd e zip
 RUN apt-get update && apt-get install -y \

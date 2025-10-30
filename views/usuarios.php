@@ -45,7 +45,19 @@ $usuarios = $dao->listarTodos();
                 <td><?= htmlspecialchars($usuario["nome"] ?? '') ?></td>
                 <td><?= htmlspecialchars($usuario["siape"] ?? '') ?></td>
                 <td><?= htmlspecialchars($usuario["login"] ?? '') ?></td>
-                <td><?= ($usuario["fk_Role_id_role"] == 1) ? "Administrador" : "Estoquista" ?></td>
+                <td>
+                    <?php
+                        if ($usuario["fk_Role_id_role"] == 1) {
+                            echo "Administrador";
+                        } elseif ($usuario["fk_Role_id_role"] == 2) {
+                            echo "Estoquista";
+                        } elseif ($usuario["fk_Role_id_role"] == 3) {
+                            echo "Servidor";
+                        } else {
+                            echo "Desconhecido";
+                        }
+                    ?>
+                </td>
                 <td>
                     <?php if ($_SESSION["usuario"]["id_usuario"] != $usuario["id_usuario"]): ?>
                         <button type="button" class="btn btn-sm btn-danger" onclick="abrirModalExclusao(<?= $usuario['id_usuario'] ?>)">

@@ -29,47 +29,72 @@ $erro = isset($_GET['erro']);
     <?php include "navbar.php"; ?>
 
     <div class="main-content d-flex justify-content-center align-items-center flex-column">
-    <div class="text-center mb-4">
-        <h2 class="fw-bold"><i class="bi bi-upload fs-3 text-success"></i> Importar Estoque</h2>
-        <p class="text-muted">Selecione um arquivo CSV para importar os dados de estoque.</p>
-    </div>
+        <div class="text-center mb-4">
+            <h2 class="fw-bold"><i class="bi bi-upload fs-3 text-success"></i> Importar Estoque</h2>
+            <p class="text-muted">Selecione um arquivo CSV para importar os dados de estoque.</p>
+        </div>
 
-    <!-- Toasts -->
-    <div class="toast-container position-fixed top-0 end-0 p-3">
-        <?php if ($sucesso): ?>
-            <div id="sucessoToast" class="toast text-bg-success border-0 show">
-                <div class="d-flex">
-                    <div class="toast-body">✅ Importação realizada com sucesso!</div>
-                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+        <!-- Toasts -->
+        <div class="toast-container position-fixed top-0 end-0 p-3">
+            <?php if ($sucesso): ?>
+                <div id="sucessoToast" class="toast text-bg-success border-0 show">
+                    <div class="d-flex">
+                        <div class="toast-body">✅ Importação realizada com sucesso!</div>
+                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
                 </div>
-            </div>
-        <?php endif; ?>
-        <?php if ($erro): ?>
-            <div id="erroToast" class="toast text-bg-danger border-0 show">
-                <div class="d-flex">
-                    <div class="toast-body">❌ Erro ao importar o arquivo!</div>
-                    <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+            <?php endif; ?>
+            <?php if ($erro): ?>
+                <div id="erroToast" class="toast text-bg-danger border-0 show">
+                    <div class="d-flex">
+                        <div class="toast-body">❌ Erro ao importar o arquivo!</div>
+                        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+                    </div>
                 </div>
-            </div>
-        <?php endif; ?>
+            <?php endif; ?>
+        </div>
+
+        <!-- Formulário -->
+        <div class="card shadow-lg border-0 p-4 rounded-4" style="max-width: 600px; width: 100%;">
+            <form id="formImportacao" action="../dao/processa_importacao.php" method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="arquivo" class="form-label fw-semibold">Arquivo CSV</label>
+                    <input type="file" class="form-control" id="arquivo" name="arquivo" accept=".csv" required>
+                </div>
+                <div class="d-grid">
+                    <!-- Botão abre modal em vez de enviar direto -->
+                    <button type="button" class="btn btn-success fw-semibold" data-bs-toggle="modal" data-bs-target="#confirmarModal">
+                        <i class="bi bi-file-earmark-arrow-up me-1"></i> Importar Arquivo
+                    </button>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <!-- Formulário -->
-    <div class="card shadow-lg border-0 p-4 rounded-4" style="max-width: 600px; width: 100%;">
-        <form action="../dao/processa_importacao.php" method="POST" enctype="multipart/form-data">
-            <div class="mb-3">
-                <label for="arquivo" class="form-label fw-semibold">Arquivo CSV</label>
-                <input type="file" class="form-control" id="arquivo" name="arquivo" accept=".csv" required>
-            </div>
-            <div class="d-grid">
-                <button type="submit" class="btn btn-success fw-semibold">
-                    <i class="bi bi-file-earmark-arrow-up me-1"></i> Importar Arquivo
-                </button>
-            </div>
-        </form>
+    <!-- Modal de Confirmação -->
+    <div class="modal fade" id="confirmarModal" tabindex="-1" aria-labelledby="confirmarModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content rounded-4 shadow-lg">
+          <div class="modal-header bg-warning-subtle">
+            <h5 class="modal-title fw-bold text-danger" id="confirmarModalLabel">
+              Atenção!
+            </h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+          </div>
+          <div class="modal-body text-center">
+            <p class="mb-3">
+              Esta ação <span class="fw-bold text-danger">APAGARÁ TODAS AS MOVIMENTAÇÕES ANTERIORES</span> do sistema
+              e manterá apenas as movimentações do arquivo que você está importando.
+            </p>
+            <p class="text-muted">Deseja realmente continuar?</p>
+          </div>
+          <div class="modal-footer d-flex justify-content-between">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="button" class="btn btn-danger" id="confirmarImportacao">Confirmar Importação</button>
+          </div>
+        </div>
+      </div>
     </div>
-</div>
-
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
@@ -80,6 +105,11 @@ $erro = isset($_GET['erro']);
                 toast.show();
                 setTimeout(() => toastEl.remove(), 5000);
             });
+        });
+
+        // Envia o formulário apenas se o usuário confirmar no modal
+        document.getElementById("confirmarImportacao").addEventListener("click", function () {
+            document.getElementById("formImportacao").submit();
         });
     </script>
 </body>

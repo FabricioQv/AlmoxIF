@@ -19,15 +19,15 @@ $itensBaixos = [];
 
 if (!$isProfessor) {
     $itensBaixos = array_filter($itens, function ($item) {
-    $estoqueCritico = !empty($item["estoque_baixo"]);
+        $estoqueCritico = !empty($item["estoque_baixo"]);
 
-    $validade = $item["validade_mais_proxima"] ?? null;
-    $dataAtual = date("Y-m-d");
-    $diasRestantes = $validade ? (strtotime($validade) - strtotime($dataAtual)) / (60 * 60 * 24) : null;
-    $validadeProxima = $validade && $diasRestantes <= 30;
+        $validade = $item["validade_mais_proxima"] ?? null;
+        $dataAtual = date("Y-m-d");
+        $diasRestantes = $validade ? (strtotime($validade) - strtotime($dataAtual)) / (60 * 60 * 24) : null;
+        $validadeProxima = $validade && $diasRestantes <= 30;
 
-    return $estoqueCritico || $validadeProxima;
-});
+        return $estoqueCritico || $validadeProxima;
+    });
 }
 ?>
 
@@ -115,8 +115,10 @@ if (!$isProfessor) {
                 <tr class="<?= (!empty($item['estoque_baixo']) ? 'table-danger' : '') ?>">
                     <td>
                         <img src="../uploads/<?= !empty($item["imagem"]) ? htmlspecialchars($item["imagem"]) : 'default.png'; ?>"
-                             alt="Imagem do item"
+                             alt="<?= htmlspecialchars($item['nome']); ?>"
                              class="item-img"
+                             style="cursor:pointer"
+                             onclick="expandImage(this)"
                              onerror="this.src='../uploads/default.png'; this.alt='Imagem não encontrada';">
                     </td>
                     <td><?= htmlspecialchars($item["codigo"]); ?></td>
@@ -154,6 +156,53 @@ if (!$isProfessor) {
     </div>
 </div>
 
+<!-- Modal para expandir imagem -->
+<div id="imageModal" class="modal-img" onclick="closeModal(event)">
+  <span class="close">&times;</span>
+  <img class="modal-content-img" id="imgExpanded">
+  <div id="caption"></div>
+</div>
+
+<style>
+.modal-img {
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  padding-top: 60px;
+  left: 0; top: 0;
+  width: 100%; height: 100%;
+  overflow: auto;
+  background-color: rgba(0,0,0,0.9);
+  animation: fadeIn 0.4s;
+}
+.modal-content-img {
+  margin: auto;
+  display: block;
+  max-width: 80%;
+  max-height: 80%;
+  border-radius: 10px;
+  animation: zoomIn 0.4s;
+}
+#caption {
+  margin: 10px auto;
+  text-align: center;
+  color: #ccc;
+  font-size: 18px;
+}
+.close {
+  position: absolute;
+  top: 20px; right: 35px;
+  color: #fff;
+  font-size: 40px;
+  font-weight: bold;
+  transition: 0.3s;
+  cursor: pointer;
+}
+.close:hover { color: #bbb; }
+@keyframes fadeIn { from {opacity: 0;} to {opacity: 1;} }
+@keyframes zoomIn { from {transform: scale(0.7);} to {transform: scale(1);} }
+</style>
+
 <!-- Scripts -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
@@ -187,6 +236,29 @@ if (!$isProfessor) {
             },
             ordering: true,
         });
+    });
+
+    function expandImage(img) {
+      const modal = document.getElementById("imageModal");
+      const modalImg = document.getElementById("imgExpanded");
+      const caption = document.getElementById("caption");
+
+      modal.style.display = "block";
+      modalImg.src = img.src;
+      caption.innerHTML = img.alt || "";
+    }
+
+    function closeModal(event) {
+      const modal = document.getElementById("imageModal");
+      if (event.target.classList.contains("modal-img") || event.target.classList.contains("close")) {
+        modal.style.display = "none";
+      }
+    }
+
+    document.addEventListener("keydown", function(e) {
+      if (e.key === "Escape") {
+        document.getElementById("imageModal").style.display = "none";
+      }
     });
 </script>
 </body>

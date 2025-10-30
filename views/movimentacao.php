@@ -34,6 +34,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['movimentacoes'])) {
             $quantidade = (int)$movimentacao['quantidade'];
             $tipo = $movimentacao['tipo'];
 
+
             $item = $itemDAO->buscarPorCodigo($codigo);
 
             if ($item) {

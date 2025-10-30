@@ -69,7 +69,7 @@ $movimentacoes = $movimentoDAO->listarMovimentacoes();
                             <td><?= htmlspecialchars($mov["quantidade"]); ?></td>
                             <td>
                                 <?php 
-                                    $validade = $mov["validade_mais_proxima"] ?? null;
+                                    $validade = $mov["validade"] ?? null;
                                     if ($validade) {
                                         echo "<span class='badge bg-primary'>" . date("d/m/Y", strtotime($validade)) . "</span>";
                                     } else {
@@ -79,8 +79,8 @@ $movimentacoes = $movimentoDAO->listarMovimentacoes();
                             </td>
                             <td><?= htmlspecialchars($mov["data_movimento"]); ?></td>
                             <td><?= htmlspecialchars($mov["usuario_nome"]); ?></td>
-                            <td class="dt-nowrap" data-bs-toggle="tooltip" title="<?= htmlspecialchars($mov["observacao"]); ?>">
-                                <?= !empty($mov["observacao"]) ? htmlspecialchars($mov["observacao"]) : '—'; ?>
+                            <td class="dt-nowrap" data-bs-toggle="tooltip" title="<?= htmlspecialchars($mov["observacao"]); ?>"
+                                <?= !empty($mov["observacao"]) ? htmlspecialchars($mov["obser>vacao"]) : '—'; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>
@@ -102,7 +102,7 @@ $movimentacoes = $movimentoDAO->listarMovimentacoes();
                 ],
                 "pageLength": 10,
                 "lengthMenu": [10, 25, 50, 100],
-                "order": [[4, 'asc']],
+                "order": [[4, 'desc']],
                 "responsive": true,
                 "language": {
                     "search": "Pesquisar:",
