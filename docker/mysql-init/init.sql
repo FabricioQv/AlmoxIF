@@ -233,4 +233,4 @@ INSERT INTO `role` (`id_role`, `nome`) VALUES
 (3, 'Professor');
 
 INSERT INTO `usuario` (`id_usuario`, `nome`, `login`, `senha`, `fk_Role_id_role`) VALUES
-(1, 'Administrador', 'adm', '$2y$10$yAuCmsXn7Q9eDsbEYUO9Yef0LWR.IeR53R4c9J.zRKZQbhF2855ei', 1),
+(1, 'Administrador', 'adm', '$2y$10$yAuCmsXn7Q9eDsbEYUO9Yef0LWR.IeR53R4c9J.zRKZQbhF2855ei', 1)
