@@ -50,7 +50,7 @@ if ($_SESSION['usuario']['fk_Role_id_role'] == 3) {
                                 </div>
                                 <div class="col-md-4 d-grid">
                                     <button type="submit" class="btn btn-success mt-3">
-                                        <i class="bi bi-download"></i> Gerar CSV
+                                        <i class="bi bi-download"></i> Gerar XLSX
                                     </button>
                                 </div>
                             </div>
@@ -68,7 +68,7 @@ if ($_SESSION['usuario']['fk_Role_id_role'] == 3) {
 
                         <form action="../dao/gerar_relatorio_conferencia.php" method="POST">
                             <button type="submit" class="btn btn-success">
-                                <i class="bi bi-file-earmark-excel"></i> Gerar Conferência (.CSV)
+                                <i class="bi bi-file-earmark-excel"></i> Gerar Conferência (.XLSX)
                             </button>
                         </form>
                     </div>

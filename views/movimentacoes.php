@@ -79,8 +79,8 @@ $movimentacoes = $movimentoDAO->listarMovimentacoes();
                             </td>
                             <td><?= htmlspecialchars($mov["data_movimento"]); ?></td>
                             <td><?= htmlspecialchars($mov["usuario_nome"]); ?></td>
-                            <td class="dt-nowrap" data-bs-toggle="tooltip" title="<?= htmlspecialchars($mov["observacao"]); ?>"
-                                <?= !empty($mov["observacao"]) ? htmlspecialchars($mov["obser>vacao"]) : '—'; ?>
+                            <td class="dt-nowrap" data-bs-toggle="tooltip" title="<?= htmlspecialchars($mov['observacao']); ?>">
+                                <?= !empty($mov['observacao']) ? htmlspecialchars($mov['observacao']) : '—'; ?>
                             </td>
                         </tr>
                     <?php endforeach; ?>

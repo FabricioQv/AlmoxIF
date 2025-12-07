@@ -133,20 +133,70 @@ class MovimentoDAO {
 
     public function gerarRelatorioMovimentacao($dataInicio, $dataFim) {
         $sql = "
-            SELECT 
-                i.nome AS item_nome,
-                COALESCE(SUM(CASE WHEN m.tipo = 'entrada' THEN m.quantidade ELSE 0 END), 0) AS total_entrada,
-                COALESCE(SUM(CASE WHEN m.tipo = 'saida' THEN m.quantidade ELSE 0 END), 0) AS total_saida,
-                (SELECT COALESCE(SUM(CASE WHEN tipo = 'entrada' THEN quantidade ELSE -quantidade END), 0) 
-                 FROM movimentacao 
-                 WHERE fk_item_id = i.id_item AND data_movimento < :dataInicio) AS estoque_inicial,
-                (SELECT COALESCE(SUM(CASE WHEN tipo = 'entrada' THEN quantidade ELSE -quantidade END), 0) 
-                 FROM movimentacao 
-                 WHERE fk_item_id = i.id_item AND data_movimento <= :dataFim) AS estoque_final
-            FROM item i
-            LEFT JOIN movimentacao m ON i.id_item = m.fk_item_id
-            WHERE m.data_movimento BETWEEN :dataInicio AND :dataFim
-            GROUP BY i.id_item;
+          SELECT
+    i.id_item,
+    i.nome AS item_nome,
+
+    -- Entradas do período (log)
+    (
+        SELECT COALESCE(SUM(lm.quantidade), 0)
+        FROM log_movimentacao lm
+        WHERE lm.fk_item_id = i.id_item
+          AND lm.tipo = 'entrada'
+          AND lm.data_log BETWEEN :dataInicio AND :dataFim
+    ) AS total_entrada,
+
+    -- Saídas do período (log)
+    (
+        SELECT COALESCE(SUM(lm.quantidade), 0)
+        FROM log_movimentacao lm
+        WHERE lm.fk_item_id = i.id_item
+          AND lm.tipo = 'saida'
+          AND lm.data_log BETWEEN :dataInicio AND :dataFim
+    ) AS total_saida,
+
+    -- Estoque final (somatório da tabela movimentacao)
+    (
+        SELECT COALESCE(SUM(m.quantidade), 0)
+        FROM movimentacao m
+        WHERE m.fk_item_id = i.id_item
+    ) AS estoque_final,
+
+    -- Estoque inicial calculado por fórmula:
+    -- inicial = final - entradas + saídas
+    (
+        (
+            SELECT COALESCE(SUM(m.quantidade), 0)
+            FROM movimentacao m
+            WHERE m.fk_item_id = i.id_item
+        )
+        -
+        (
+            SELECT COALESCE(SUM(lm.quantidade), 0)
+            FROM log_movimentacao lm
+            WHERE lm.fk_item_id = i.id_item
+              AND lm.tipo = 'entrada'
+              AND lm.data_log BETWEEN :dataInicio AND :dataFim
+        )
+        +
+        (
+            SELECT COALESCE(SUM(lm.quantidade), 0)
+            FROM log_movimentacao lm
+            WHERE lm.fk_item_id = i.id_item
+              AND lm.tipo = 'saida'
+              AND lm.data_log BETWEEN :dataInicio AND :dataFim
+        )
+    ) AS estoque_inicial
+
+FROM item i
+
+WHERE i.id_item IN (
+    SELECT fk_item_id
+    FROM log_movimentacao
+    WHERE data_log BETWEEN :dataInicio AND :dataFim
+)
+
+ORDER BY i.nome;
         ";
 
         $stmt = $this->conn->prepare($sql);
