@@ -9,7 +9,10 @@ function processarPDF($arquivoTemporario) {
     $pdf = $parser->parseFile($arquivoTemporario);
     $text = $pdf->getText();
 
+    $text = str_replace("\t", " ", $text);
+    $text = preg_replace('/ {2,}/', ' ', $text);
     $linhas = explode("\n", $text);
+
     $itensEncontrados = [];
     $itemDAO = new ItemDAO();
 
@@ -17,12 +20,10 @@ function processarPDF($arquivoTemporario) {
         if ($itemDAO->buscarPorCodigo($codigoBruto)) {
             return $codigoBruto;
         }
-
         $codigoSemZeros = ltrim($codigoBruto, '0');
         if ($itemDAO->buscarPorCodigo($codigoSemZeros)) {
             return $codigoSemZeros;
         }
-
         return $codigoBruto;
     }
 
@@ -34,36 +35,43 @@ function processarPDF($arquivoTemporario) {
     foreach ($linhas as $linha) {
         $linha = trim($linha);
 
-        // Detecta início de um item
-        if (preg_match('/^\d+\s+\d+\s+(\d+)/', $linha, $matches)) {
-            // Se já estávamos capturando um item anterior, salva ele
+        if (preg_match('/^\d+\s+\d+\s+(\d{5,6})\b(.*)$/', $linha, $matches)) {
             if (!empty($codigo) && !empty($quantidade)) {
                 $codigoFinal = sanitizarCodigo($codigo, $itemDAO);
                 $item = $itemDAO->buscarPorCodigo($codigoFinal);
-
                 if ($item) {
                     $itensEncontrados[] = [
                         'codigo_pdf' => $codigo,
                         'codigo' => $codigoFinal,
                         'nome' => trim($descricao),
-                        'quantidade' => (int) $quantidade
+                        'quantidade' => (int)$quantidade
                     ];
                 }
             }
 
-            // Inicia captura de novo item
             $codigo = $matches[1];
             $descricao = '';
             $quantidade = '';
-            $modoCaptura = 'descricao';
+
+            $restante = trim($matches[2]);
+            if (!empty($restante)) {
+                if (preg_match('/^(.*)\s+(\d{1,4})\s+[\d.,]+$/', $restante, $m2)) {
+                    $descricao = trim($m2[1]);
+                    $quantidade = $m2[2];
+                    $modoCaptura = false;
+                } else {
+                    $descricao = $restante;
+                    $modoCaptura = 'descricao';
+                }
+            } else {
+                $modoCaptura = 'descricao';
+            }
             continue;
         }
 
-        // Captura descrição ou quantidade
         if ($modoCaptura === 'descricao') {
-            if (preg_match('/^\d+\s+[\d,.]+$/', $linha)) {
-                $partes = preg_split('/\s+/', $linha);
-                $quantidade = $partes[0];
+            if (preg_match('/^(\d{1,4})\s+[\d.,]+$/', $linha, $m)) {
+                $quantidade = $m[1];
                 $modoCaptura = false;
             } else {
                 $descricao .= ' ' . $linha;
@@ -71,17 +79,15 @@ function processarPDF($arquivoTemporario) {
         }
     }
 
-    // Verifica se o último item foi capturado
     if (!empty($codigo) && !empty($quantidade)) {
         $codigoFinal = sanitizarCodigo($codigo, $itemDAO);
         $item = $itemDAO->buscarPorCodigo($codigoFinal);
-
         if ($item) {
             $itensEncontrados[] = [
                 'codigo_pdf' => $codigo,
                 'codigo' => $codigoFinal,
                 'nome' => trim($descricao),
-                'quantidade' => (int) $quantidade
+                'quantidade' => (int)$quantidade
             ];
         }
     }

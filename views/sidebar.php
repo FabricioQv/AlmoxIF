@@ -52,18 +52,18 @@
                     <li><a class="nav-link nav-anim d-flex align-items-center sidebar-btn" href="relatorios.php"><i class="bi bi-file-earmark-text me-2"></i> Gerar Relatórios</a></li>
                 </ul>
             </li>
+            <li class="nav-item">
+                <a class="nav-link nav-anim d-flex align-items-center sidebar-btn" href="cadastro_categoria.php">
+                    <i class="bi bi-tags me-2 icon-anim"></i> <span>Cadastrar Categoria</span>
+                </a>
+            </li>
         <?php endif; ?>
-
+        
         <!-- Admin Only -->
         <?php if ($_SESSION["usuario"]["fk_Role_id_role"] == 1): ?> 
             <li class="nav-item">
                 <a class="nav-link nav-anim d-flex align-items-center sidebar-btn" href="importar_csv.php">
                     <i class="bi bi-upload me-2 icon-anim"></i> <span>Importar CSV</span>
-                </a>
-            </li>
-            <li class="nav-item">
-                <a class="nav-link nav-anim d-flex align-items-center sidebar-btn" href="cadastro_categoria.php">
-                    <i class="bi bi-tags me-2 icon-anim"></i> <span>Cadastrar Categoria</span>
                 </a>
             </li>
             <li class="nav-item">
